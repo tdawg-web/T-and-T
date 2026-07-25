@@ -1,0 +1,2602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Model Edge">
+<meta name="theme-color" content="#0A0D0A">
+<title>Model Edge Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0D0A;
+    --surface:#12160F;
+    --surface2:#1A1F16;
+    --line:#262B22;
+    --amber:#FFB627;
+    --amber-dim:#8A6A22;
+    --green:#4A9B6E;
+    --red:#E85C4A;
+    --chalk:#EDEAE0;
+    --muted:#8B9186;
+    --muted2:#5C625A;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--chalk);
+    font-family:'Inter',system-ui,sans-serif; overscroll-behavior-y:none;}
+  body{padding-bottom:48px;}
+
+  .display{font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:0.03em;}
+  .mono{font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums;}
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky; top:0; z-index:20;
+    background:linear-gradient(180deg, var(--bg) 70%, rgba(10,13,10,0.92));
+    backdrop-filter:blur(10px);
+    padding:calc(env(safe-area-inset-top) + 14px) 18px 12px;
+    border-bottom:1px solid var(--line);
+  }
+  .week-row{display:flex; align-items:baseline; justify-content:space-between;}
+  .week-label{font-family:'Oswald',sans-serif; font-weight:700; font-size:22px;
+    letter-spacing:0.04em; text-transform:uppercase; color:var(--chalk);}
+  .week-count{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted);
+    font-variant-numeric:tabular-nums;}
+  .disclaimer{margin-top:8px; font-size:11.5px; line-height:1.4; color:var(--muted2);
+    border-left:2px solid var(--amber-dim); padding-left:8px;}
+
+  .controls{display:flex; gap:8px; margin-top:14px;}
+  .toggle-group{display:flex; background:var(--surface); border:1px solid var(--line);
+    border-radius:8px; padding:3px; flex:1;}
+  .toggle-btn{flex:1; text-align:center; padding:8px 10px; border-radius:6px; border:none;
+    background:transparent; color:var(--muted); font-family:'Oswald',sans-serif;
+    font-size:13px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+    cursor:pointer; transition:background 0.2s, color 0.2s;}
+  .toggle-btn.active{background:var(--surface2); color:var(--amber);
+    box-shadow:0 0 0 1px var(--line) inset;}
+  .filter-btn{padding:8px 14px; border-radius:8px; border:1px solid var(--line);
+    background:var(--surface); color:var(--muted); font-family:'Oswald',sans-serif;
+    font-size:13px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+    cursor:pointer; white-space:nowrap;}
+  .filter-btn.active{color:var(--green); border-color:var(--green);}
+
+  /* ---------- game list ---------- */
+  main{padding:14px 14px 0;}
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    margin-bottom:10px; overflow:hidden;
+    opacity:0; transform:translateY(8px);
+    animation:rise 0.4s ease forwards;
+  }
+  @keyframes rise{ to{opacity:1; transform:translateY(0);} }
+
+  .card-main{display:flex; align-items:center; padding:14px 14px; gap:12px; cursor:pointer;}
+  .card-left{flex:1; min-width:0;}
+  .card-date{font-size:10.5px; color:var(--muted2); font-family:'JetBrains Mono',monospace;
+    letter-spacing:0.04em; text-transform:uppercase;}
+  .matchup{font-family:'Oswald',sans-serif; font-size:15px; font-weight:500; margin-top:2px;
+    color:var(--chalk); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .pick-line{margin-top:6px; font-size:12.5px; color:var(--muted); display:flex; align-items:center; gap:6px;}
+  .pick-team{color:var(--green); font-weight:600;}
+  .rs-chip{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--muted2);
+    background:var(--surface2); padding:1px 6px; border-radius:4px; margin-top:6px; display:inline-block;}
+
+  .edge-box{text-align:center; min-width:64px;}
+  .edge-num{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:26px;
+    color:var(--amber); text-shadow:0 0 12px rgba(255,182,39,0.45); line-height:1;}
+  .edge-label{font-size:8.5px; color:var(--muted2); letter-spacing:0.08em; margin-top:3px;
+    text-transform:uppercase; font-family:'Oswald',sans-serif;}
+  .edge-num.neg{color:var(--muted);text-shadow:none;}
+
+  .chevron{color:var(--muted2); font-size:12px; transition:transform 0.25s;}
+  .card.open .chevron{transform:rotate(180deg);}
+
+  .card-detail{max-height:0; overflow:hidden; transition:max-height 0.3s ease;}
+  .card.open .card-detail{max-height:400px;}
+  .detail-inner{padding:0 14px 16px; border-top:1px solid var(--line); padding-top:12px;}
+
+  .stat-row{display:flex; justify-content:space-between; font-size:12px; color:var(--muted);
+    padding:4px 0;}
+  .stat-row b{color:var(--chalk); font-family:'JetBrains Mono',monospace; font-weight:500;}
+
+  .comp-table{width:100%; margin-top:10px; border-collapse:collapse; font-size:11px;}
+  .comp-table th{font-family:'Oswald',sans-serif; font-weight:500; color:var(--muted2);
+    text-align:right; padding:3px 6px; font-size:10px; letter-spacing:0.03em;}
+  .comp-table th:first-child, .comp-table td:first-child{text-align:left;}
+  .comp-table td{font-family:'JetBrains Mono',monospace; text-align:right; padding:3px 6px;
+    color:var(--chalk); border-top:1px solid var(--line);}
+
+  footer{padding:24px 18px 10px; text-align:center; color:var(--muted2); font-size:11px;}
+  footer a{color:var(--muted);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="week-row">
+    <div class="week-label">Week 0-1 · 2026</div>
+    <div class="week-count mono"><span id="gameCount">51</span> games</div>
+  </div>
+  <div class="disclaimer">Model edge, not a proven pick. Backtest across 6,324 real games: ~50% ATS win rate at every edge size — below the ~52.4% breakeven needed at standard odds.</div>
+  <div class="controls">
+    <div class="toggle-group">
+      <button class="toggle-btn active" data-mode="spread">Spread</button>
+      <button class="toggle-btn" data-mode="ml">Moneyline</button>
+    </div>
+    <button class="filter-btn active" id="filterBtn">Top 10</button>
+  </div>
+</header>
+
+<main id="gameList"></main>
+
+<footer>
+  Add to Home Screen from Safari's Share menu for full-screen app mode.<br>
+  Data current as of last model run · updates when you request a new pull.
+</footer>
+
+<script id="game-data" type="application/json">
+[
+ {
+  "date": "Aug 29",
+  "away": "NC State",
+  "home": "Virginia",
+  "aRS": 8,
+  "hRS": 8,
+  "spread": {
+   "away": "5.5",
+   "home": "-5.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": 5.5,
+   "homeEV": -14.6,
+   "awayP": 55.3,
+   "homeP": 44.7,
+   "edge": -2.0
+  },
+  "ml": {
+   "away": "168",
+   "home": "-205",
+   "awayEV": 2.9,
+   "homeEV": -8.3,
+   "awayP": 38.4,
+   "homeP": 61.6
+  },
+  "components": {
+   "away": {
+    "B": "10.38",
+    "R": "-1.03",
+    "Q": "4.0",
+    "OL": "1.35",
+    "D": "-1.21",
+    "T": "0.083",
+    "C": "2.0"
+   },
+   "home": {
+    "B": "12.43",
+    "R": "-2.58",
+    "Q": "1.0",
+    "OL": "1.35",
+    "D": "1.27",
+    "T": "0.355",
+    "C": "1.55"
+   }
+  }
+ },
+ {
+  "date": "Aug 29",
+  "away": "North Carolina",
+  "home": "TCU",
+  "aRS": 5,
+  "hRS": 8,
+  "spread": {
+   "away": "6.5",
+   "home": "-6.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -25.7,
+   "homeEV": 16.6,
+   "awayP": 38.9,
+   "homeP": 61.1,
+   "edge": 4.2
+  },
+  "ml": {
+   "away": "195",
+   "home": "-235",
+   "awayEV": -43.5,
+   "homeEV": 15.2,
+   "awayP": 19.2,
+   "homeP": 80.8
+  },
+  "components": {
+   "away": {
+    "B": "-6.1",
+    "R": "1.3",
+    "Q": "0.0",
+    "OL": "-0.75",
+    "D": "-0.62",
+    "T": "-0.456",
+    "C": "0.65"
+   },
+   "home": {
+    "B": "10.34",
+    "R": "-1.03",
+    "Q": "-0.5",
+    "OL": "0.9",
+    "D": "1.51",
+    "T": "0.545",
+    "C": "0.65"
+   }
+  }
+ },
+ {
+  "date": "Aug 29",
+  "away": "San Jose State",
+  "home": "USC",
+  "aRS": 2,
+  "hRS": 15,
+  "spread": {
+   "away": "35.5",
+   "home": "-35.5",
+   "awayOdds": "-115",
+   "homeOdds": "-105",
+   "awayEV": -30.1,
+   "homeEV": 22.2,
+   "awayP": 37.4,
+   "homeP": 62.6,
+   "edge": 5.5
+  },
+  "ml": {
+   "away": null,
+   "home": null,
+   "awayEV": null,
+   "homeEV": null,
+   "awayP": 0.4,
+   "homeP": 99.6
+  },
+  "components": {
+   "away": {
+    "B": "-15.36",
+    "R": "-2.58",
+    "Q": "0.0",
+    "OL": "0.9",
+    "D": "-2.62",
+    "T": "-0.347",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "17.49",
+    "R": "3.64",
+    "Q": "4.5",
+    "OL": "2.75",
+    "D": "1.86",
+    "T": "0.626",
+    "C": "0.25"
+   }
+  }
+ },
+ {
+  "date": "Aug 29",
+  "away": "Jacksonville State",
+  "home": "North Dakota State",
+  "aRS": 9,
+  "hRS": 8,
+  "spread": {
+   "away": "7.5",
+   "home": "-7.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -1.6,
+   "homeEV": -7.5,
+   "awayP": 51.5,
+   "homeP": 48.5,
+   "edge": -0.6
+  },
+  "ml": {
+   "away": "250",
+   "home": "-315",
+   "awayEV": -1.4,
+   "homeEV": -5.3,
+   "awayP": 28.2,
+   "homeP": 71.8
+  },
+  "components": {
+   "away": {
+    "B": "-8.7",
+    "R": "-1.03",
+    "Q": "2.5",
+    "OL": "0.9",
+    "D": "1.04",
+    "T": "-0.192",
+    "C": "2.0"
+   },
+   "home": {
+    "B": "",
+    "R": "-2.58",
+    "Q": "0.0",
+    "OL": "1.35",
+    "D": "0.92",
+    "T": "-0.329",
+    "C": "1.55"
+   }
+  }
+ },
+ {
+  "date": "Aug 29",
+  "away": "Sacramento State",
+  "home": "Eastern Michigan",
+  "aRS": 4,
+  "hRS": 9,
+  "spread": {
+   "away": "7.5",
+   "home": "-7.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": -8.2,
+   "homeEV": -1.0,
+   "awayP": 47.0,
+   "homeP": 53.0,
+   "edge": 1.1
+  },
+  "ml": {
+   "away": "255",
+   "home": "-320",
+   "awayEV": -15.6,
+   "homeEV": 0.0,
+   "awayP": 23.8,
+   "homeP": 76.2
+  },
+  "components": {
+   "away": {
+    "B": "-15.19",
+    "R": "-1.34",
+    "Q": "0.0",
+    "OL": "-0.75",
+    "D": "-0.14",
+    "T": "-0.246",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "-12.56",
+    "R": "0.22",
+    "Q": "2.5",
+    "OL": "0.9",
+    "D": "0.21",
+    "T": "-0.167",
+    "C": "2.0"
+   }
+  }
+ },
+ {
+  "date": "Aug 29",
+  "away": "Hawaii",
+  "home": "Stanford",
+  "aRS": 7,
+  "hRS": 12,
+  "spread": {
+   "away": "4.5",
+   "home": "-4.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": 5.3,
+   "homeEV": -14.4,
+   "awayP": 55.2,
+   "homeP": 44.8,
+   "edge": -1.9
+  },
+  "ml": {
+   "away": "158",
+   "home": "-192",
+   "awayEV": 6.8,
+   "homeEV": -10.9,
+   "awayP": 41.4,
+   "homeP": 58.6
+  },
+  "components": {
+   "away": {
+    "B": "0.69",
+    "R": "-1.03",
+    "Q": "2.5",
+    "OL": "0.9",
+    "D": "-0.5",
+    "T": "-0.377",
+    "C": "2.0"
+   },
+   "home": {
+    "B": "-1.55",
+    "R": "-0.25",
+    "Q": "0.0",
+    "OL": "2.3",
+    "D": "2.1",
+    "T": "0.644",
+    "C": "-1.554"
+   }
+  }
+ },
+ {
+  "date": "Aug 29",
+  "away": "New Mexico State",
+  "home": "Florida State",
+  "aRS": 9,
+  "hRS": 6,
+  "spread": {
+   "away": "29.5",
+   "home": "-29.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": 10.5,
+   "homeEV": -19.6,
+   "awayP": 57.9,
+   "homeP": 42.1,
+   "edge": -3.2
+  },
+  "ml": {
+   "away": "2400",
+   "home": "-10000",
+   "awayEV": -30.1,
+   "homeEV": -1.8,
+   "awayP": 2.8,
+   "homeP": 97.2
+  },
+  "components": {
+   "away": {
+    "B": "-14.97",
+    "R": "1.3",
+    "Q": "0.0",
+    "OL": "-0.3",
+    "D": "1.27",
+    "T": "-0.363",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "7.56",
+    "R": "0.53",
+    "Q": "-1.0",
+    "OL": "-0.75",
+    "D": "0.21",
+    "T": "0.102",
+    "C": "0.65"
+   }
+  }
+ },
+ {
+  "date": "Aug 29",
+  "away": "Memphis",
+  "home": "UNLV",
+  "aRS": 1,
+  "hRS": 6,
+  "spread": {
+   "away": "4.5",
+   "home": "-4.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": -10.4,
+   "homeEV": 1.1,
+   "awayP": 45.9,
+   "homeP": 54.1,
+   "edge": 1.6
+  },
+  "ml": {
+   "away": "172",
+   "home": "-210",
+   "awayEV": -16.9,
+   "homeEV": 2.5,
+   "awayP": 30.6,
+   "homeP": 69.5
+  },
+  "components": {
+   "away": {
+    "B": "1.25",
+    "R": "-2.58",
+    "Q": "0.0",
+    "OL": "-0.3",
+    "D": "-2.62",
+    "T": "-0.001",
+    "C": "-0.061"
+   },
+   "home": {
+    "B": "1.33",
+    "R": "-0.25",
+    "Q": "0.0",
+    "OL": "0.9",
+    "D": "-0.26",
+    "T": "-0.058",
+    "C": "1.55"
+   }
+  }
+ },
+ {
+  "date": "Sep 3",
+  "away": "UMass",
+  "home": "Rutgers",
+  "aRS": 6,
+  "hRS": 8,
+  "spread": {
+   "away": "30.5",
+   "home": "-30.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": -19.8,
+   "homeEV": 10.2,
+   "awayP": 41.1,
+   "homeP": 58.9,
+   "edge": 3.7
+  },
+  "ml": {
+   "away": "3000",
+   "home": "-10000",
+   "awayEV": -69.7,
+   "homeEV": 0.0,
+   "awayP": 1.0,
+   "homeP": 99.0
+  },
+  "components": {
+   "away": {
+    "B": "-32.45",
+    "R": "-0.1",
+    "Q": "0.0",
+    "OL": "-0.75",
+    "D": "-0.03",
+    "T": "-0.409",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "4.6",
+    "R": "1.3",
+    "Q": "-1.0",
+    "OL": "0.9",
+    "D": "0.8",
+    "T": "0.129",
+    "C": "0.65"
+   }
+  }
+ },
+ {
+  "date": "Sep 3",
+  "away": "Akron",
+  "home": "Wake Forest",
+  "aRS": 9,
+  "hRS": 10,
+  "spread": {
+   "away": "22.5",
+   "home": "-22.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": -0.5,
+   "homeEV": -8.3,
+   "awayP": 51.0,
+   "homeP": 49.0,
+   "edge": -0.4
+  },
+  "ml": {
+   "away": "1280",
+   "home": "-3500",
+   "awayEV": -33.7,
+   "homeEV": -2.1,
+   "awayP": 4.8,
+   "homeP": 95.2
+  },
+  "components": {
+   "away": {
+    "B": "-14.8",
+    "R": "2.55",
+    "Q": "0.0",
+    "OL": "1.35",
+    "D": "-0.26",
+    "T": "-0.411",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "6.54",
+    "R": "-1.03",
+    "Q": "0.5",
+    "OL": "-0.3",
+    "D": "3.63",
+    "T": "-0.101",
+    "C": "0.65"
+   }
+  }
+ },
+ {
+  "date": "Sep 3",
+  "away": "Colorado",
+  "home": "Georgia Tech",
+  "aRS": 5,
+  "hRS": 7,
+  "spread": {
+   "away": "7.5",
+   "home": "-7.5",
+   "awayOdds": "-120",
+   "homeOdds": "-102",
+   "awayEV": -13.4,
+   "homeEV": 4.5,
+   "awayP": 47.2,
+   "homeP": 52.8,
+   "edge": 1.1
+  },
+  "ml": {
+   "away": "225",
+   "home": "-280",
+   "awayEV": -22.1,
+   "homeEV": 3.2,
+   "awayP": 24.0,
+   "homeP": 76.0
+  },
+  "components": {
+   "away": {
+    "B": "-3.06",
+    "R": "2.55",
+    "Q": "0.0",
+    "OL": "-0.3",
+    "D": "-2.15",
+    "T": "0.342",
+    "C": "-0.25"
+   },
+   "home": {
+    "B": "7.57",
+    "R": "-2.58",
+    "Q": "-1.0",
+    "OL": "0.9",
+    "D": "1.39",
+    "T": "0.094",
+    "C": "-0.25"
+   }
+  }
+ },
+ {
+  "date": "Sep 3",
+  "away": "UAB",
+  "home": "Illinois",
+  "aRS": 3,
+  "hRS": 7,
+  "spread": {
+   "away": "27.5",
+   "home": "-27.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": -13.7,
+   "homeEV": 4.3,
+   "awayP": 44.2,
+   "homeP": 55.8,
+   "edge": 2.4
+  },
+  "ml": {
+   "away": "2000",
+   "home": "-7000",
+   "awayEV": -63.5,
+   "homeEV": -0.3,
+   "awayP": 1.7,
+   "homeP": 98.3
+  },
+  "components": {
+   "away": {
+    "B": "-14.1",
+    "R": "-2.58",
+    "Q": "0.0",
+    "OL": "0.9",
+    "D": "-2.15",
+    "T": "-0.372",
+    "C": "-0.061"
+   },
+   "home": {
+    "B": "12.59",
+    "R": "2.86",
+    "Q": "-0.5",
+    "OL": "-0.3",
+    "D": "-1.21",
+    "T": "0.347",
+    "C": "0.65"
+   }
+  }
+ },
+ {
+  "date": "Sep 4",
+  "away": "San Jose State",
+  "home": "Eastern Michigan",
+  "aRS": 2,
+  "hRS": 9,
+  "spread": {
+   "away": "3.5",
+   "home": "-3.5",
+   "awayOdds": "-114",
+   "homeOdds": "-106",
+   "awayEV": -22.7,
+   "homeEV": 14.3,
+   "awayP": 41.2,
+   "homeP": 58.8,
+   "edge": 3.4
+  },
+  "ml": {
+   "away": "136",
+   "home": "-164",
+   "awayEV": -33.0,
+   "homeEV": 15.2,
+   "awayP": 28.4,
+   "homeP": 71.6
+  },
+  "components": {
+   "away": {
+    "B": "-15.36",
+    "R": "-2.58",
+    "Q": "0.0",
+    "OL": "0.9",
+    "D": "-2.62",
+    "T": "-0.347",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "-12.56",
+    "R": "0.22",
+    "Q": "2.5",
+    "OL": "0.9",
+    "D": "0.21",
+    "T": "-0.167",
+    "C": "2.0"
+   }
+  }
+ },
+ {
+  "date": "Sep 4",
+  "away": "UTEP",
+  "home": "Oklahoma",
+  "aRS": 4,
+  "hRS": 14,
+  "spread": {
+   "away": "39.5",
+   "home": "-39.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": -19.0,
+   "homeEV": 9.4,
+   "awayP": 41.5,
+   "homeP": 58.5,
+   "edge": 3.5
+  },
+  "ml": {
+   "away": null,
+   "home": null,
+   "awayEV": null,
+   "homeEV": null,
+   "awayP": 0.3,
+   "homeP": 99.7
+  },
+  "components": {
+   "away": {
+    "B": "-19.02",
+    "R": "-2.58",
+    "Q": "0.0",
+    "OL": "-0.75",
+    "D": "0.21",
+    "T": "-0.114",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "16.31",
+    "R": "1.3",
+    "Q": "2.5",
+    "OL": "2.75",
+    "D": "1.74",
+    "T": "0.769",
+    "C": "2.0"
+   }
+  }
+ },
+ {
+  "date": "Sep 4",
+  "away": "Toledo",
+  "home": "Michigan State",
+  "aRS": 1,
+  "hRS": 5,
+  "spread": {
+   "away": "11.5",
+   "home": "-11.5",
+   "awayOdds": "-115",
+   "homeOdds": "-105",
+   "awayEV": 9.6,
+   "homeEV": -19.2,
+   "awayP": 58.6,
+   "homeP": 41.4,
+   "edge": -3.3
+  },
+  "ml": {
+   "away": "330",
+   "home": "-430",
+   "awayEV": 6.4,
+   "homeEV": -7.2,
+   "awayP": 24.8,
+   "homeP": 75.2
+  },
+  "components": {
+   "away": {
+    "B": "6.26",
+    "R": "-2.58",
+    "Q": "0.0",
+    "OL": "-0.75",
+    "D": "-2.62",
+    "T": "-0.159",
+    "C": "-0.061"
+   },
+   "home": {
+    "B": "3.22",
+    "R": "-1.03",
+    "Q": "-0.25",
+    "OL": "-0.3",
+    "D": "0.33",
+    "T": "-0.645",
+    "C": "-0.561"
+   }
+  }
+ },
+ {
+  "date": "Sep 4",
+  "away": "Fresno State",
+  "home": "USC",
+  "aRS": 13,
+  "hRS": 15,
+  "spread": {
+   "away": "23.5",
+   "home": "-23.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": -3.0,
+   "homeEV": -6.0,
+   "awayP": 49.7,
+   "homeP": 50.3,
+   "edge": 0.1
+  },
+  "ml": {
+   "away": "1280",
+   "home": "-3500",
+   "awayEV": -45.4,
+   "homeEV": -1.2,
+   "awayP": 4.0,
+   "homeP": 96.0
+  },
+  "components": {
+   "away": {
+    "B": "-0.02",
+    "R": "2.86",
+    "Q": "0.0",
+    "OL": "1.35",
+    "D": "3.16",
+    "T": "-0.122",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "17.49",
+    "R": "3.64",
+    "Q": "4.5",
+    "OL": "2.75",
+    "D": "1.86",
+    "T": "0.626",
+    "C": "0.25"
+   }
+  }
+ },
+ {
+  "date": "Sep 4",
+  "away": "Miami",
+  "home": "Stanford",
+  "aRS": 10,
+  "hRS": 12,
+  "spread": {
+   "away": "-21.5",
+   "home": "21.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": 12.7,
+   "homeEV": -21.0,
+   "awayP": 57.7,
+   "homeP": 42.3,
+   "edge": -3.0
+  },
+  "ml": {
+   "away": "-2800",
+   "home": "1160",
+   "awayEV": -0.1,
+   "homeEV": -55.7,
+   "awayP": 96.5,
+   "homeP": 3.5
+  },
+  "components": {
+   "away": {
+    "B": "25.07",
+    "R": "1.3",
+    "Q": "2.0",
+    "OL": "-0.3",
+    "D": "2.21",
+    "T": "1.52",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "-1.55",
+    "R": "-0.25",
+    "Q": "0.0",
+    "OL": "2.3",
+    "D": "2.1",
+    "T": "0.644",
+    "C": "-1.554"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Coastal Carolina",
+  "home": "West Virginia",
+  "aRS": 5,
+  "hRS": 3,
+  "spread": {
+   "away": "18.5",
+   "home": "-18.5",
+   "awayOdds": "-115",
+   "homeOdds": "-105",
+   "awayEV": -5.0,
+   "homeEV": -4.0,
+   "awayP": 50.8,
+   "homeP": 49.2,
+   "edge": -0.3
+  },
+  "ml": {
+   "away": "720",
+   "home": "-1200",
+   "awayEV": -34.9,
+   "homeEV": -0.3,
+   "awayP": 7.9,
+   "homeP": 92.1
+  },
+  "components": {
+   "away": {
+    "B": "-12.53",
+    "R": "-1.34",
+    "Q": "0.0",
+    "OL": "-0.75",
+    "D": "-0.03",
+    "T": "-0.198",
+    "C": "-0.061"
+   },
+   "home": {
+    "B": "0.34",
+    "R": "-2.58",
+    "Q": "3.0",
+    "OL": "0.9",
+    "D": "-2.62",
+    "T": "0.079",
+    "C": "2.0"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Miami-Ohio",
+  "home": "Pittsburgh",
+  "aRS": 9,
+  "hRS": 11,
+  "spread": {
+   "away": "15.5",
+   "home": "-15.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": -9.6,
+   "homeEV": 0.4,
+   "awayP": 46.3,
+   "homeP": 53.7,
+   "edge": 1.4
+  },
+  "ml": {
+   "away": "580",
+   "home": "-880",
+   "awayEV": -37.1,
+   "homeEV": 1.1,
+   "awayP": 9.2,
+   "homeP": 90.8
+  },
+  "components": {
+   "away": {
+    "B": "-5.33",
+    "R": "-1.03",
+    "Q": "0.0",
+    "OL": "2.3",
+    "D": "0.21",
+    "T": "-0.192",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "8.58",
+    "R": "-1.03",
+    "Q": "3.25",
+    "OL": "2.3",
+    "D": "1.63",
+    "T": "-0.329",
+    "C": "1.15"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Ohio",
+  "home": "Nebraska",
+  "aRS": 6,
+  "hRS": 12,
+  "spread": {
+   "away": "23.5",
+   "home": "-23.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": 13.3,
+   "homeEV": -21.5,
+   "awayP": 58.0,
+   "homeP": 42.0,
+   "edge": -3.1
+  },
+  "ml": {
+   "away": "1280",
+   "home": "-3500",
+   "awayEV": -16.9,
+   "homeEV": -3.3,
+   "awayP": 6.0,
+   "homeP": 94.0
+  },
+  "components": {
+   "away": {
+    "B": "-2.14",
+    "R": "-1.03",
+    "Q": "0.0",
+    "OL": "-0.75",
+    "D": "1.39",
+    "T": "-0.277",
+    "C": "-0.554"
+   },
+   "home": {
+    "B": "3.67",
+    "R": "1.77",
+    "Q": "0.0",
+    "OL": "1.35",
+    "D": "1.74",
+    "T": "0.454",
+    "C": "0.65"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Oregon State",
+  "home": "Houston",
+  "aRS": 10,
+  "hRS": 12,
+  "spread": {
+   "away": "18.5",
+   "home": "-18.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -16.9,
+   "homeEV": 7.8,
+   "awayP": 43.5,
+   "homeP": 56.5,
+   "edge": 2.5
+  },
+  "ml": {
+   "away": "800",
+   "home": "-1400",
+   "awayEV": -50.2,
+   "homeEV": 1.2,
+   "awayP": 5.5,
+   "homeP": 94.5
+  },
+  "components": {
+   "away": {
+    "B": "-12.54",
+    "R": "-1.34",
+    "Q": "2.5",
+    "OL": "1.35",
+    "D": "1.27",
+    "T": "-0.094",
+    "C": "3.696"
+   },
+   "home": {
+    "B": "7.28",
+    "R": "2.08",
+    "Q": "4.0",
+    "OL": "0.9",
+    "D": "1.51",
+    "T": "1.247",
+    "C": "2.0"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "North Texas",
+  "home": "Indiana",
+  "aRS": 0,
+  "hRS": 10,
+  "spread": {
+   "away": "39.5",
+   "home": "-39.5",
+   "awayOdds": "-115",
+   "homeOdds": "-105",
+   "awayEV": -7.0,
+   "homeEV": -1.9,
+   "awayP": 49.7,
+   "homeP": 50.3,
+   "edge": 0.1
+  },
+  "ml": {
+   "away": null,
+   "home": null,
+   "awayEV": null,
+   "homeEV": null,
+   "awayP": 0.5,
+   "homeP": 99.5
+  },
+  "components": {
+   "away": {
+    "B": "9.64",
+    "R": "-2.58",
+    "Q": "0.0",
+    "OL": "-0.75",
+    "D": "-2.62",
+    "T": "-0.325",
+    "C": "-0.061"
+   },
+   "home": {
+    "B": "34.56",
+    "R": "-1.03",
+    "Q": "2.0",
+    "OL": "1.35",
+    "D": "2.1",
+    "T": "1.984",
+    "C": "0.65"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "East Carolina",
+  "home": "Alabama",
+  "aRS": 3,
+  "hRS": 7,
+  "spread": {
+   "away": "25.5",
+   "home": "-25.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": 17.4,
+   "homeEV": -25.5,
+   "awayP": 60.2,
+   "homeP": 39.9,
+   "edge": -4.2
+  },
+  "ml": {
+   "away": "1600",
+   "home": "-4500",
+   "awayEV": -9.8,
+   "homeEV": -3.2,
+   "awayP": 5.3,
+   "homeP": 94.7
+  },
+  "components": {
+   "away": {
+    "B": "6.2",
+    "R": "-1.03",
+    "Q": "0.0",
+    "OL": "-0.75",
+    "D": "-0.73",
+    "T": "-0.112",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "16.23",
+    "R": "0.22",
+    "Q": "-0.5",
+    "OL": "-0.3",
+    "D": "-0.38",
+    "T": "0.445",
+    "C": "1.55"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Liberty",
+  "home": "James Madison",
+  "aRS": 10,
+  "hRS": 3,
+  "spread": {
+   "away": "6.5",
+   "home": "-6.5",
+   "awayOdds": "-108",
+   "homeOdds": "-112",
+   "awayEV": -15.8,
+   "homeEV": 6.6,
+   "awayP": 43.7,
+   "homeP": 56.3,
+   "edge": 2.4
+  },
+  "ml": {
+   "away": "195",
+   "home": "-245",
+   "awayEV": -31.6,
+   "homeEV": 8.2,
+   "awayP": 23.2,
+   "homeP": 76.8
+  },
+  "components": {
+   "away": {
+    "B": "-10.98",
+    "R": "-1.03",
+    "Q": "2.5",
+    "OL": "2.3",
+    "D": "1.15",
+    "T": "-0.223",
+    "C": "2.0"
+   },
+   "home": {
+    "B": "11.61",
+    "R": "-2.58",
+    "Q": "0.0",
+    "OL": "-0.3",
+    "D": "-0.97",
+    "T": "-0.183",
+    "C": "-0.061"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Ball State",
+  "home": "Ohio State",
+  "aRS": 7,
+  "hRS": 11,
+  "spread": {
+   "away": "50.5",
+   "home": "-50.5",
+   "awayOdds": "-115",
+   "homeOdds": "-105",
+   "awayEV": -18.7,
+   "homeEV": 10.3,
+   "awayP": 43.5,
+   "homeP": 56.5,
+   "edge": 2.9
+  },
+  "ml": {
+   "away": null,
+   "home": null,
+   "awayEV": null,
+   "homeEV": null,
+   "awayP": 0.1,
+   "homeP": 99.9
+  },
+  "components": {
+   "away": {
+    "B": "-19.11",
+    "R": "0.22",
+    "Q": "0.0",
+    "OL": "1.35",
+    "D": "-1.68",
+    "T": "-0.339",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "28.41",
+    "R": "2.86",
+    "Q": "4.5",
+    "OL": "2.3",
+    "D": "-0.62",
+    "T": "0.637",
+    "C": "1.15"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Kent State",
+  "home": "South Carolina",
+  "aRS": 9,
+  "hRS": 10,
+  "spread": {
+   "away": "34.5",
+   "home": "-34.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": 10.7,
+   "homeEV": -19.1,
+   "awayP": 56.7,
+   "homeP": 43.3,
+   "edge": -2.8
+  },
+  "ml": {
+   "away": null,
+   "home": null,
+   "awayEV": null,
+   "homeEV": null,
+   "awayP": 1.4,
+   "homeP": 98.6
+  },
+  "components": {
+   "away": {
+    "B": "-14.8",
+    "R": "1.46",
+    "Q": "2.5",
+    "OL": "1.35",
+    "D": "-1.09",
+    "T": "-0.286",
+    "C": "-0.054"
+   },
+   "home": {
+    "B": "7.54",
+    "R": "0.22",
+    "Q": "2.5",
+    "OL": "0.9",
+    "D": "1.04",
+    "T": "0.877",
+    "C": "1.15"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Tulane",
+  "home": "Duke",
+  "aRS": 5,
+  "hRS": 8,
+  "spread": {
+   "away": "10.5",
+   "home": "-10.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": 1.4,
+   "homeEV": -10.2,
+   "awayP": 51.9,
+   "homeP": 48.0,
+   "edge": -0.8
+  },
+  "ml": {
+   "away": "350",
+   "home": "-465",
+   "awayEV": -4.9,
+   "homeEV": -4.2,
+   "awayP": 21.1,
+   "homeP": 78.9
+  },
+  "components": {
+   "away": {
+    "B": "6.67",
+    "R": "-1.03",
+    "Q": "0.0",
+    "OL": "-0.3",
+    "D": "-0.85",
+    "T": "0.002",
+    "C": "-0.061"
+   },
+   "home": {
+    "B": "9.06",
+    "R": "0.99",
+    "Q": "-0.5",
+    "OL": "0.9",
+    "D": "-0.38",
+    "T": "-0.331",
+    "C": "1.55"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Baylor",
+  "home": "Auburn",
+  "aRS": 5,
+  "hRS": 3,
+  "spread": {
+   "away": "7.5",
+   "home": "-7.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -1.8,
+   "homeEV": -7.2,
+   "awayP": 51.4,
+   "homeP": 48.6,
+   "edge": -0.6
+  },
+  "ml": {
+   "away": "235",
+   "home": "-295",
+   "awayEV": -5.7,
+   "homeEV": -3.8,
+   "awayP": 28.1,
+   "homeP": 71.9
+  },
+  "components": {
+   "away": {
+    "B": "3.48",
+    "R": "-2.58",
+    "Q": "0.0",
+    "OL": "-0.3",
+    "D": "0.21",
+    "T": "-0.364",
+    "C": "0.65"
+   },
+   "home": {
+    "B": "9.18",
+    "R": "-0.25",
+    "Q": "0.5",
+    "OL": "-0.75",
+    "D": "-1.32",
+    "T": "0.214",
+    "C": "-0.561"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Texas State",
+  "home": "Texas",
+  "aRS": 11,
+  "hRS": 12,
+  "spread": {
+   "away": "31.5",
+   "home": "-31.5",
+   "awayOdds": "-115",
+   "homeOdds": "-105",
+   "awayEV": 12.7,
+   "homeEV": -22.4,
+   "awayP": 60.3,
+   "homeP": 39.7,
+   "edge": -4.4
+  },
+  "ml": {
+   "away": "2400",
+   "home": "-10000",
+   "awayEV": -37.2,
+   "homeEV": -1.5,
+   "awayP": 2.5,
+   "homeP": 97.5
+  },
+  "components": {
+   "away": {
+    "B": "1.43",
+    "R": "3.33",
+    "Q": "2.5",
+    "OL": "0.9",
+    "D": "0.21",
+    "T": "-0.119",
+    "C": "2.0"
+   },
+   "home": {
+    "B": "15.9",
+    "R": "0.53",
+    "Q": "4.5",
+    "OL": "1.35",
+    "D": "2.33",
+    "T": "1.913",
+    "C": "1.15"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Boise State",
+  "home": "Oregon",
+  "aRS": 13,
+  "hRS": 14,
+  "spread": {
+   "away": "24.5",
+   "home": "-24.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -7.8,
+   "homeEV": -1.3,
+   "awayP": 48.3,
+   "homeP": 51.7,
+   "edge": 0.7
+  },
+  "ml": {
+   "away": "1400",
+   "home": "-4000",
+   "awayEV": -51.5,
+   "homeEV": -0.8,
+   "awayP": 3.2,
+   "homeP": 96.8
+  },
+  "components": {
+   "away": {
+    "B": "4.66",
+    "R": "2.55",
+    "Q": "2.5",
+    "OL": "1.35",
+    "D": "2.45",
+    "T": "0.071",
+    "C": "2.0"
+   },
+   "home": {
+    "B": "26.56",
+    "R": "1.77",
+    "Q": "4.5",
+    "OL": "0.9",
+    "D": "3.63",
+    "T": "1.144",
+    "C": "2.0"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Boston College",
+  "home": "Cincinnati",
+  "aRS": 5,
+  "hRS": 5,
+  "spread": {
+   "away": "7.5",
+   "home": "-7.5",
+   "awayOdds": "-122",
+   "homeOdds": "100",
+   "awayEV": -7.6,
+   "homeEV": -1.5,
+   "awayP": 50.8,
+   "homeP": 49.2,
+   "edge": -0.3
+  },
+  "ml": {
+   "away": "225",
+   "home": "-280",
+   "awayEV": -10.9,
+   "homeEV": -1.5,
+   "awayP": 27.4,
+   "homeP": 72.6
+  },
+  "components": {
+   "away": {
+    "B": "-3.22",
+    "R": "-2.58",
+    "Q": "-0.5",
+    "OL": "-0.3",
+    "D": "-0.14",
+    "T": "-0.583",
+    "C": "0.65"
+   },
+   "home": {
+    "B": "2.34",
+    "R": "-2.58",
+    "Q": "-0.5",
+    "OL": "1.35",
+    "D": "-1.32",
+    "T": "-0.534",
+    "C": "-0.25"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Marshall",
+  "home": "Penn State",
+  "aRS": 9,
+  "hRS": 4,
+  "spread": {
+   "away": "23.5",
+   "home": "-23.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": 10.0,
+   "homeEV": -19.1,
+   "awayP": 57.6,
+   "homeP": 42.4,
+   "edge": -3.1
+  },
+  "ml": {
+   "away": "1280",
+   "home": "-3500",
+   "awayEV": -17.8,
+   "homeEV": -3.3,
+   "awayP": 5.9,
+   "homeP": 94.0
+  },
+  "components": {
+   "away": {
+    "B": "-6.18",
+    "R": "1.77",
+    "Q": "2.5",
+    "OL": "0.9",
+    "D": "-0.85",
+    "T": "-0.352",
+    "C": "2.0"
+   },
+   "home": {
+    "B": "16.64",
+    "R": "-1.34",
+    "Q": "0.5",
+    "OL": "-0.3",
+    "D": "-1.68",
+    "T": "0.293",
+    "C": "-1.061"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Oklahoma State",
+  "home": "Tulsa",
+  "aRS": 3,
+  "hRS": 9,
+  "spread": {
+   "away": "-13.5",
+   "home": "13.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": -37.0,
+   "homeEV": 26.6,
+   "awayP": 32.3,
+   "homeP": 67.7,
+   "edge": 7.4
+  },
+  "ml": {
+   "away": "-520",
+   "home": "385",
+   "awayEV": -17.0,
+   "homeEV": 47.5,
+   "awayP": 69.6,
+   "homeP": 30.4
+  },
+  "components": {
+   "away": {
+    "B": "-8.52",
+    "R": "-2.58",
+    "Q": "0.5",
+    "OL": "-0.3",
+    "D": "-1.09",
+    "T": "-0.38",
+    "C": "-1.061"
+   },
+   "home": {
+    "B": "-11.19",
+    "R": "-2.58",
+    "Q": "2.5",
+    "OL": "0.9",
+    "D": "1.15",
+    "T": "-0.161",
+    "C": "2.0"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Northern Illinois",
+  "home": "Iowa",
+  "aRS": 4,
+  "hRS": 6,
+  "spread": {
+   "away": "30.5",
+   "home": "-30.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -12.2,
+   "homeEV": 3.1,
+   "awayP": 46.0,
+   "homeP": 54.0,
+   "edge": 1.6
+  },
+  "ml": {
+   "away": "3500",
+   "home": "-20000",
+   "awayEV": -53.3,
+   "homeEV": -0.8,
+   "awayP": 1.3,
+   "homeP": 98.7
+  },
+  "components": {
+   "away": {
+    "B": "-14.42",
+    "R": "1.3",
+    "Q": "0.0",
+    "OL": "0.9",
+    "D": "-2.62",
+    "T": "-0.147",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "18.78",
+    "R": "-0.25",
+    "Q": "-0.25",
+    "OL": "0.9",
+    "D": "-0.85",
+    "T": "0.212",
+    "C": "1.55"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Wyoming",
+  "home": "Colorado State",
+  "aRS": 6,
+  "hRS": 4,
+  "spread": {
+   "away": "3.5",
+   "home": "-3.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": 10.7,
+   "homeEV": -19.0,
+   "awayP": 56.7,
+   "homeP": 43.3,
+   "edge": -2.5
+  },
+  "ml": {
+   "away": "152",
+   "home": "-184",
+   "awayEV": 17.1,
+   "homeEV": -17.3,
+   "awayP": 46.5,
+   "homeP": 53.5
+  },
+  "components": {
+   "away": {
+    "B": "-12.43",
+    "R": "1.3",
+    "Q": "0.0",
+    "OL": "0.9",
+    "D": "-1.68",
+    "T": "-0.22",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "-13.34",
+    "R": "-1.03",
+    "Q": "0.0",
+    "OL": "-0.75",
+    "D": "-0.26",
+    "T": "-0.132",
+    "C": "-0.061"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "FIU",
+  "home": "South Florida",
+  "aRS": 5,
+  "hRS": 3,
+  "spread": {
+   "away": "11.5",
+   "home": "-11.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -20.1,
+   "homeEV": 11.0,
+   "awayP": 41.8,
+   "homeP": 58.2,
+   "edge": 3.2
+  },
+  "ml": {
+   "away": "350",
+   "home": "-465",
+   "awayEV": -45.6,
+   "homeEV": 6.8,
+   "awayP": 12.1,
+   "homeP": 87.9
+  },
+  "components": {
+   "away": {
+    "B": "-8.54",
+    "R": "-1.03",
+    "Q": "0.0",
+    "OL": "-0.3",
+    "D": "-0.5",
+    "T": "-0.247",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "10.38",
+    "R": "-1.03",
+    "Q": "0.0",
+    "OL": "-0.3",
+    "D": "-2.15",
+    "T": "-0.027",
+    "C": "3.196"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Arkansas State",
+  "home": "Memphis",
+  "aRS": 10,
+  "hRS": 1,
+  "spread": {
+   "away": "10.5",
+   "home": "-10.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": 10.6,
+   "homeEV": -19.7,
+   "awayP": 57.9,
+   "homeP": 42.1,
+   "edge": -3.1
+  },
+  "ml": {
+   "away": "315",
+   "home": "-410",
+   "awayEV": 11.8,
+   "homeEV": -9.1,
+   "awayP": 26.9,
+   "homeP": 73.1
+  },
+  "components": {
+   "away": {
+    "B": "-9.86",
+    "R": "2.86",
+    "Q": "0.0",
+    "OL": "2.3",
+    "D": "-1.21",
+    "T": "-0.077",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "1.25",
+    "R": "-2.58",
+    "Q": "0.0",
+    "OL": "-0.3",
+    "D": "-2.62",
+    "T": "-0.001",
+    "C": "-0.061"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Sam Houston",
+  "home": "Troy",
+  "aRS": 5,
+  "hRS": 7,
+  "spread": {
+   "away": "17.5",
+   "home": "-17.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -4.6,
+   "homeEV": -4.5,
+   "awayP": 50.0,
+   "homeP": 50.0,
+   "edge": 0.0
+  },
+  "ml": {
+   "away": "680",
+   "home": "-1100",
+   "awayEV": -32.9,
+   "homeEV": -0.3,
+   "awayP": 8.6,
+   "homeP": 91.4
+  },
+  "components": {
+   "away": {
+    "B": "-23.02",
+    "R": "2.86",
+    "Q": "0.0",
+    "OL": "-0.75",
+    "D": "-0.73",
+    "T": "-0.417",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "-6.75",
+    "R": "-1.34",
+    "Q": "2.5",
+    "OL": "1.35",
+    "D": "-2.15",
+    "T": "-0.11",
+    "C": "2.0"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Western Michigan",
+  "home": "Michigan",
+  "aRS": 11,
+  "hRS": 10,
+  "spread": {
+   "away": "25.5",
+   "home": "-25.5",
+   "awayOdds": "-108",
+   "homeOdds": "-112",
+   "awayEV": 21.3,
+   "homeEV": -30.0,
+   "awayP": 63.0,
+   "homeP": 37.0,
+   "edge": -5.1
+  },
+  "ml": {
+   "away": "2000",
+   "home": "-7000",
+   "awayEV": 26.4,
+   "homeEV": -4.7,
+   "awayP": 6.0,
+   "homeP": 94.0
+  },
+  "components": {
+   "away": {
+    "B": "1.19",
+    "R": "2.86",
+    "Q": "2.5",
+    "OL": "1.35",
+    "D": "-0.73",
+    "T": "-0.249",
+    "C": "2.0"
+   },
+   "home": {
+    "B": "13.18",
+    "R": "0.53",
+    "Q": "3.25",
+    "OL": "2.3",
+    "D": "-0.62",
+    "T": "0.146",
+    "C": "-0.561"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Missouri State",
+  "home": "Texas A&M",
+  "aRS": 7,
+  "hRS": 9,
+  "spread": {
+   "away": "39.5",
+   "home": "-39.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": 4.7,
+   "homeEV": -13.8,
+   "awayP": 54.8,
+   "homeP": 45.2,
+   "edge": -2.0
+  },
+  "ml": {
+   "away": null,
+   "home": null,
+   "awayEV": null,
+   "homeEV": null,
+   "awayP": 0.6,
+   "homeP": 99.4
+  },
+  "components": {
+   "away": {
+    "B": "-10.14",
+    "R": "1.77",
+    "Q": "0.0",
+    "OL": "-0.3",
+    "D": "-0.85",
+    "T": "-0.416",
+    "C": "3.196"
+   },
+   "home": {
+    "B": "17.27",
+    "R": "0.53",
+    "Q": "4.0",
+    "OL": "-0.3",
+    "D": "0.68",
+    "T": "2.141",
+    "C": "1.15"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Clemson",
+  "home": "LSU",
+  "aRS": 8,
+  "hRS": 8,
+  "spread": {
+   "away": "11.5",
+   "home": "-11.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": 11.5,
+   "homeEV": -20.6,
+   "awayP": 58.4,
+   "homeP": 41.6,
+   "edge": -3.2
+  },
+  "ml": {
+   "away": "365",
+   "home": "-490",
+   "awayEV": 14.4,
+   "homeEV": -9.2,
+   "awayP": 24.6,
+   "homeP": 75.4
+  },
+  "components": {
+   "away": {
+    "B": "8.93",
+    "R": "1.77",
+    "Q": "-0.25",
+    "OL": "0.9",
+    "D": "-0.5",
+    "T": "0.855",
+    "C": "0.65"
+   },
+   "home": {
+    "B": "8.01",
+    "R": "3.33",
+    "Q": "0.0",
+    "OL": "0.9",
+    "D": "-0.85",
+    "T": "2.376",
+    "C": "-0.561"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Louisiana Monroe",
+  "home": "Mississippi State",
+  "aRS": 5,
+  "hRS": 7,
+  "spread": {
+   "away": "29.5",
+   "home": "-29.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": 12.0,
+   "homeEV": -20.3,
+   "awayP": 57.4,
+   "homeP": 42.6,
+   "edge": -3.1
+  },
+  "ml": {
+   "away": "2400",
+   "home": "-10000",
+   "awayEV": -31.4,
+   "homeEV": -1.8,
+   "awayP": 2.7,
+   "homeP": 97.3
+  },
+  "components": {
+   "away": {
+    "B": "-19.35",
+    "R": "-1.03",
+    "Q": "2.5",
+    "OL": "-0.3",
+    "D": "-0.73",
+    "T": "-0.321",
+    "C": "2.0"
+   },
+   "home": {
+    "B": "1.59",
+    "R": "-1.03",
+    "Q": "-0.5",
+    "OL": "-0.3",
+    "D": "1.27",
+    "T": "0.322",
+    "C": "0.65"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Florida Atlantic",
+  "home": "Florida",
+  "aRS": 11,
+  "hRS": 9,
+  "spread": {
+   "away": "26.5",
+   "home": "-26.5",
+   "awayOdds": "-115",
+   "homeOdds": "-105",
+   "awayEV": 13.8,
+   "homeEV": -23.6,
+   "awayP": 60.9,
+   "homeP": 39.1,
+   "edge": -4.6
+  },
+  "ml": {
+   "away": "1400",
+   "home": "-4000",
+   "awayEV": -26.1,
+   "homeEV": -2.5,
+   "awayP": 4.9,
+   "homeP": 95.1
+  },
+  "components": {
+   "away": {
+    "B": "-9.9",
+    "R": "0.53",
+    "Q": "2.5",
+    "OL": "0.9",
+    "D": "2.1",
+    "T": "-0.255",
+    "C": "2.0"
+   },
+   "home": {
+    "B": "6.04",
+    "R": "1.3",
+    "Q": "0.5",
+    "OL": "0.9",
+    "D": "1.04",
+    "T": "1.083",
+    "C": "-1.061"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "UNLV",
+  "home": "Hawaii",
+  "aRS": 6,
+  "hRS": 7,
+  "spread": {
+   "away": "-2.5",
+   "home": "2.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -13.2,
+   "homeEV": 4.1,
+   "awayP": 45.5,
+   "homeP": 54.5,
+   "edge": 1.7
+  },
+  "ml": {
+   "away": "-132",
+   "home": "110",
+   "awayEV": -7.6,
+   "homeEV": -0.4,
+   "awayP": 52.6,
+   "homeP": 47.4
+  },
+  "components": {
+   "away": {
+    "B": "1.33",
+    "R": "-0.25",
+    "Q": "0.0",
+    "OL": "0.9",
+    "D": "-0.26",
+    "T": "-0.058",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "0.69",
+    "R": "-1.03",
+    "Q": "2.5",
+    "OL": "0.9",
+    "D": "-0.5",
+    "T": "-0.377",
+    "C": "2.0"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Central Michigan",
+  "home": "New Mexico",
+  "aRS": 8,
+  "hRS": 14,
+  "spread": {
+   "away": "12.5",
+   "home": "-12.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": -12.4,
+   "homeEV": 3.1,
+   "awayP": 44.9,
+   "homeP": 55.1,
+   "edge": 1.9
+  },
+  "ml": {
+   "away": "430",
+   "home": "-600",
+   "awayEV": -33.9,
+   "homeEV": 2.1,
+   "awayP": 12.5,
+   "homeP": 87.5
+  },
+  "components": {
+   "away": {
+    "B": "-7.98",
+    "R": "0.53",
+    "Q": "0.0",
+    "OL": "2.3",
+    "D": "-0.73",
+    "T": "-0.29",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "2.06",
+    "R": "1.77",
+    "Q": "2.5",
+    "OL": "2.3",
+    "D": "1.51",
+    "T": "-0.24",
+    "C": "2.0"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "Western Kentucky",
+  "home": "Nevada",
+  "aRS": 6,
+  "hRS": 6,
+  "spread": {
+   "away": "-2.5",
+   "home": "2.5",
+   "awayOdds": "-122",
+   "homeOdds": "100",
+   "awayEV": -3.1,
+   "homeEV": -6.5,
+   "awayP": 53.2,
+   "homeP": 46.8,
+   "edge": -1.2
+  },
+  "ml": {
+   "away": "-142",
+   "home": "118",
+   "awayEV": 6.1,
+   "homeEV": -17.7,
+   "awayP": 62.2,
+   "homeP": 37.8
+  },
+  "components": {
+   "away": {
+    "B": "-4.44",
+    "R": "-1.03",
+    "Q": "2.5",
+    "OL": "-0.3",
+    "D": "-0.62",
+    "T": "-0.175",
+    "C": "2.0"
+   },
+   "home": {
+    "B": "-11.58",
+    "R": "-2.58",
+    "Q": "2.5",
+    "OL": "1.35",
+    "D": "-0.97",
+    "T": "-0.219",
+    "C": "2.0"
+   }
+  }
+ },
+ {
+  "date": "Sep 5",
+  "away": "UCLA",
+  "home": "California",
+  "aRS": 6,
+  "hRS": 9,
+  "spread": {
+   "away": "1.5",
+   "home": "-1.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -7.2,
+   "homeEV": -1.9,
+   "awayP": 48.6,
+   "homeP": 51.4,
+   "edge": 0.5
+  },
+  "ml": {
+   "away": "100",
+   "home": "-120",
+   "awayEV": -13.6,
+   "homeEV": 4.1,
+   "awayP": 43.2,
+   "homeP": 56.8
+  },
+  "components": {
+   "away": {
+    "B": "-0.26",
+    "R": "-2.58",
+    "Q": "3.5",
+    "OL": "0.9",
+    "D": "-1.21",
+    "T": "0.488",
+    "C": "-0.561"
+   },
+   "home": {
+    "B": "-1.69",
+    "R": "0.22",
+    "Q": "3.25",
+    "OL": "1.35",
+    "D": "-0.85",
+    "T": "0.544",
+    "C": "-1.054"
+   }
+  }
+ },
+ {
+  "date": "Sep 6",
+  "away": "Washington State",
+  "home": "Washington",
+  "aRS": 5,
+  "hRS": 10,
+  "spread": {
+   "away": "21.5",
+   "home": "-21.5",
+   "awayOdds": "-115",
+   "homeOdds": "-105",
+   "awayEV": -7.0,
+   "homeEV": -1.9,
+   "awayP": 49.8,
+   "homeP": 50.2,
+   "edge": 0.1
+  },
+  "ml": {
+   "away": "1000",
+   "home": "-2100",
+   "awayEV": -43.5,
+   "homeEV": -0.6,
+   "awayP": 5.1,
+   "homeP": 94.9
+  },
+  "components": {
+   "away": {
+    "B": "8.17",
+    "R": "2.55",
+    "Q": "0.0",
+    "OL": "0.9",
+    "D": "-2.62",
+    "T": "-0.166",
+    "C": "-1.5"
+   },
+   "home": {
+    "B": "19.31",
+    "R": "0.22",
+    "Q": "4.0",
+    "OL": "2.3",
+    "D": "-0.26",
+    "T": "0.038",
+    "C": "2.0"
+   }
+  }
+ },
+ {
+  "date": "Sep 6",
+  "away": "Louisville",
+  "home": "Ole Miss",
+  "aRS": 8,
+  "hRS": 10,
+  "spread": {
+   "away": "6.5",
+   "home": "-6.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -18.4,
+   "homeEV": 9.3,
+   "awayP": 42.7,
+   "homeP": 57.3,
+   "edge": 2.8
+  },
+  "ml": {
+   "away": "188",
+   "home": "-230",
+   "awayEV": -36.1,
+   "homeEV": 11.7,
+   "awayP": 22.2,
+   "homeP": 77.8
+  },
+  "components": {
+   "away": {
+    "B": "10.31",
+    "R": "2.55",
+    "Q": "-0.5",
+    "OL": "-0.3",
+    "D": "-0.03",
+    "T": "1.364",
+    "C": "0.65"
+   },
+   "home": {
+    "B": "21.12",
+    "R": "-0.25",
+    "Q": "4.5",
+    "OL": "1.35",
+    "D": "1.27",
+    "T": "1.111",
+    "C": "-0.554"
+   }
+  }
+ },
+ {
+  "date": "Sep 6",
+  "away": "Wisconsin",
+  "home": "Notre Dame",
+  "aRS": 4,
+  "hRS": 14,
+  "spread": {
+   "away": "20.5",
+   "home": "-20.5",
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -26.6,
+   "homeEV": 17.5,
+   "awayP": 38.4,
+   "homeP": 61.6,
+   "edge": 4.5
+  },
+  "ml": {
+   "away": "980",
+   "home": "-2000",
+   "awayEV": -64.3,
+   "homeEV": 1.5,
+   "awayP": 3.3,
+   "homeP": 96.7
+  },
+  "components": {
+   "away": {
+    "B": "6.91",
+    "R": "-1.03",
+    "Q": "-0.5",
+    "OL": "0.9",
+    "D": "-2.15",
+    "T": "0.451",
+    "C": "1.55"
+   },
+   "home": {
+    "B": "26.96",
+    "R": "-1.03",
+    "Q": "4.5",
+    "OL": "2.3",
+    "D": "3.04",
+    "T": "1.733",
+    "C": "2.0"
+   }
+  }
+ },
+ {
+  "date": "Sep 7",
+  "away": "SMU",
+  "home": "Florida State",
+  "aRS": 11,
+  "hRS": 6,
+  "spread": {
+   "away": "-2.5",
+   "home": "2.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": 19.8,
+   "homeEV": -27.7,
+   "awayP": 61.4,
+   "homeP": 38.6,
+   "edge": -4.3
+  },
+  "ml": {
+   "away": "-120",
+   "home": "100",
+   "awayEV": 31.1,
+   "homeEV": -43.0,
+   "awayP": 71.5,
+   "homeP": 28.5
+  },
+  "components": {
+   "away": {
+    "B": "13.91",
+    "R": "2.86",
+    "Q": "4.0",
+    "OL": "1.35",
+    "D": "-0.03",
+    "T": "0.412",
+    "C": "1.15"
+   },
+   "home": {
+    "B": "7.56",
+    "R": "0.53",
+    "Q": "-1.0",
+    "OL": "-0.75",
+    "D": "0.21",
+    "T": "0.102",
+    "C": "0.65"
+   }
+  }
+ }
+]
+</script>
+
+<script>
+const games = JSON.parse(document.getElementById('game-data').textContent);
+let mode = 'spread';
+let topOnly = true;
+
+function pickSide(g, mode){
+  if(mode === 'spread'){
+    const homeEV = g.spread.homeEV, awayEV = g.spread.awayEV;
+    const useHome = homeEV >= awayEV;
+    return {
+      team: useHome ? g.home : g.away,
+      line: useHome ? g.spread.home : g.spread.away,
+      odds: useHome ? g.spread.homeOdds : g.spread.awayOdds,
+      prob: useHome ? g.spread.homeP : g.spread.awayP,
+      edge: Math.abs(g.spread.edge),
+      raw: useHome ? homeEV : awayEV
+    };
+  } else {
+    const hEV = g.ml.homeEV, aEV = g.ml.awayEV;
+    if(hEV === null && aEV === null) return null;
+    const useHome = (hEV ?? -999) >= (aEV ?? -999);
+    return {
+      team: useHome ? g.home : g.away,
+      line: useHome ? g.ml.home : g.ml.away,
+      prob: useHome ? g.ml.homeP : g.ml.awayP,
+      raw: useHome ? hEV : aEV
+    };
+  }
+}
+
+function render(){
+  let list = games.map(g => ({g, pick: pickSide(g, mode)})).filter(x => x.pick !== null);
+  list.sort((a,b) => b.pick.raw - a.pick.raw);
+  if(topOnly) list = list.slice(0, 10);
+
+  document.getElementById('gameCount').textContent = list.length;
+  const container = document.getElementById('gameList');
+  container.innerHTML = '';
+
+  list.forEach((item, i) => {
+    const g = item.g, p = item.pick;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.animationDelay = (i * 0.035) + 's';
+
+    const edgeDisplay = mode === 'spread'
+      ? (p.edge >= 0 ? '+' : '') + p.edge.toFixed(1)
+      : p.raw.toFixed(0) + '%';
+    const edgeNeg = mode === 'spread' ? false : p.raw < 5;
+
+    const lineText = mode === 'spread'
+      ? `${p.line > 0 ? '+' : ''}${p.line} (${p.odds})`
+      : `${p.line > 0 ? '+' : ''}${p.line}`;
+
+    card.innerHTML = `
+      <div class="card-main" onclick="this.parentElement.classList.toggle('open')">
+        <div class="card-left">
+          <div class="card-date mono">${g.date}</div>
+          <div class="matchup">${g.away} @ ${g.home}</div>
+          <div class="pick-line">Model favors <span class="pick-team">${p.team}</span> · ${lineText}</div>
+          <div class="rs-chip">RS ${g.aRS} vs ${g.hRS} &nbsp;·&nbsp; cover/win prob ${p.prob.toFixed(1)}%</div>
+        </div>
+        <div class="edge-box">
+          <div class="edge-num ${edgeNeg ? 'neg' : ''}">${edgeDisplay}</div>
+          <div class="edge-label">${mode === 'spread' ? 'pts edge' : 'win prob'}</div>
+        </div>
+        <div class="chevron">&#9660;</div>
+      </div>
+      <div class="card-detail">
+        <div class="detail-inner">
+          <div class="stat-row"><span>Away returning starters</span><b>${g.aRS}</b></div>
+          <div class="stat-row"><span>Home returning starters</span><b>${g.hRS}</b></div>
+          <table class="comp-table">
+            <tr><th></th><th>B</th><th>R</th><th>Q</th><th>OL</th><th>D</th><th>T</th><th>C</th></tr>
+            <tr><td>${g.away}</td>
+              <td>${g.components.away.B}</td><td>${g.components.away.R}</td>
+              <td>${g.components.away.Q}</td><td>${g.components.away.OL}</td>
+              <td>${g.components.away.D}</td><td>${g.components.away.T}</td>
+              <td>${g.components.away.C}</td></tr>
+            <tr><td>${g.home}</td>
+              <td>${g.components.home.B}</td><td>${g.components.home.R}</td>
+              <td>${g.components.home.Q}</td><td>${g.components.home.OL}</td>
+              <td>${g.components.home.D}</td><td>${g.components.home.T}</td>
+              <td>${g.components.home.C}</td></tr>
+          </table>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    mode = btn.dataset.mode;
+    render();
+  });
+});
+
+document.getElementById('filterBtn').addEventListener('click', (e) => {
+  topOnly = !topOnly;
+  e.target.textContent = topOnly ? 'Top 10' : 'All Games';
+  e.target.classList.toggle('active', topOnly);
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
