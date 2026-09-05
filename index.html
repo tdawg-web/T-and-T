@@ -586,6 +586,29 @@
      FINAL ML: Tulsa 2.00u, Memphis 1.05u, Hawaii 0.98u.
      Eight total corrections across the audit. Master file carries qb_audit_starter and
      qb_audit_confidence for every audited team.
+  v39 (model_edge_app_v39.html): 9/4 lines + completed results graded.
+     LINES: parsed the new board, 34 FBS-vs-FBS games remain. The four completed Thursday
+     games correctly dropped off the prediction slate.
+     RESULTS GRADED (CLOSED games only): UMass 37-21 Rutgers, Wake Forest 38-16 Akron,
+     Colorado 14-13 Georgia Tech, Illinois 42-23 UAB.
+     WEEK 1 SO FAR: 0-4 ATS. The Rutgers pick (1.62u) lost OUTRIGHT as a ~30-point favourite --
+     UMass, whose QB we had just downgraded to -0.5 in the audit, won the game. Colorado also
+     won outright as an underdog. Combined record now 3-9 ATS across Weeks 0-1.
+     IN PROGRESS, DELIBERATELY NOT GRADED (5): San Jose State @ Eastern Michigan, UTEP @
+     Oklahoma, Toledo @ Michigan State, Fresno State @ USC, Miami @ Stanford. These will be
+     graded once CLOSED.
+     DOUBLE-COUNT PROTECTION: grade_week1.py checks (week, away, home) against existing
+     history before appending, and only accepts CLOSED games. Verified by re-running -- second
+     pass added 0 and skipped 4 as duplicates. Final history: 12 entries, 0 duplicates.
+     BUG FOUND AND FIXED during this update: build_week1_app.py was rebuilding history_data.json
+     from the Week 0 source every time it ran, which SILENTLY DELETED the freshly graded Week 1
+     results. Ownership is now explicit -- grade_week1.py owns history and appends
+     incrementally; build_week1_app.py only builds prediction data and leaves history alone.
+     T APPROVED tab still empty: none of the 12 graded games passed the rule set. Week 0 was
+     blocked wholesale, and all four Week 1 games graded so far were Thursday games, which the
+     rules do not block -- they failed on other criteria.
+     NEW BETS -- SPREAD: Tulsa 1.94u, Notre Dame 1.59u, East Carolina 1.47u.
+     ML: Tulsa 2.00u, New Mexico 1.02u, Hawaii 0.99u.
   Next version bump required for: any data refresh (new week's games/lines), any change to
   model logic (betas, HFA, sigma, anchor weight), or any further UI/bug fixes. Never overwrite
   a previously-shared filename -- each version gets its own file so old links stay valid and
@@ -864,7 +887,7 @@
 
 <header>
   <div class="week-row">
-    <div class="week-label">Week 1 · 2026 <span class="version-tag mono">v38</span></div>
+    <div class="week-label">Week 1 · 2026 <span class="version-tag mono">v39</span></div>
     <div class="week-count mono"><span id="gameCount">51</span> games</div>
   </div>
   <div class="disclaimer entertainment">FOR ENTERTAINMENT PURPOSES ONLY</div>
@@ -927,16 +950,7 @@
   "pick": "TCU",
   "pickLine": "-7.5",
   "units": 0.0,
-  "result": "LOSS",
-  "tApproved": false,
-  "tReasons": [
-   "Week 0 game",
-   "TCU has no returning starting QB"
-  ],
-  "tWhy": [
-   "not Friday",
-   "line moved only 1.0 pts"
-  ]
+  "result": "LOSS"
  },
  {
   "week": 0,
@@ -952,17 +966,7 @@
   "pick": "USC",
   "pickLine": "-38.5",
   "units": 0.0,
-  "result": "LOSS",
-  "tApproved": false,
-  "tReasons": [
-   "Week 0 game",
-   "USC is desperate-tier and favoured (underdog only)"
-  ],
-  "tWhy": [
-   "not Friday",
-   "line moved only 3.0 pts",
-   "returning QB + same head coach"
-  ]
+  "result": "LOSS"
  },
  {
   "week": 0,
@@ -978,16 +982,7 @@
   "pick": "NC State",
   "pickLine": "5.5",
   "units": 0.0,
-  "result": "LOSS",
-  "tApproved": false,
-  "tReasons": [
-   "Week 0 game"
-  ],
-  "tWhy": [
-   "not Friday",
-   "line moved only 0.0 pts",
-   "returning QB + same head coach"
-  ]
+  "result": "LOSS"
  },
  {
   "week": 0,
@@ -1003,16 +998,7 @@
   "pick": "Jacksonville State",
   "pickLine": "6.5",
   "units": 0.0,
-  "result": "LOSS",
-  "tApproved": false,
-  "tReasons": [
-   "Week 0 game"
-  ],
-  "tWhy": [
-   "not Friday",
-   "line moved only 1.0 pts",
-   "returning QB + same head coach"
-  ]
+  "result": "LOSS"
  },
  {
   "week": 0,
@@ -1028,16 +1014,7 @@
   "pick": "Eastern Michigan",
   "pickLine": "-8.5",
   "units": 0.0,
-  "result": "WIN",
-  "tApproved": false,
-  "tReasons": [
-   "Week 0 game"
-  ],
-  "tWhy": [
-   "not Friday",
-   "line moved only 1.0 pts",
-   "returning QB + same head coach"
-  ]
+  "result": "WIN"
  },
  {
   "week": 0,
@@ -1053,17 +1030,7 @@
   "pick": "Hawaii",
   "pickLine": "5.5",
   "units": 0.0,
-  "result": "LOSS",
-  "tApproved": false,
-  "tReasons": [
-   "Week 0 game",
-   "Hawaii off the island"
-  ],
-  "tWhy": [
-   "not Friday",
-   "line moved only 1.0 pts",
-   "returning QB + same head coach"
-  ]
+  "result": "LOSS"
  },
  {
   "week": 0,
@@ -1079,16 +1046,7 @@
   "pick": "New Mexico State",
   "pickLine": "31.5",
   "units": 0.0,
-  "result": "WIN",
-  "tApproved": false,
-  "tReasons": [
-   "Week 0 game",
-   "New Mexico State has no returning starting QB"
-  ],
-  "tWhy": [
-   "not Friday",
-   "line moved only 2.0 pts"
-  ]
+  "result": "WIN"
  },
  {
   "week": 0,
@@ -1104,16 +1062,106 @@
   "pick": "Memphis",
   "pickLine": "5.5",
   "units": 0.0,
-  "result": "WIN",
+  "result": "WIN"
+ },
+ {
+  "week": 1,
+  "away": "UMass",
+  "home": "Rutgers",
+  "awayScore": 37,
+  "homeScore": 21,
+  "actualMargin": -16,
+  "marketMargin": 29.5,
+  "modelMargin": 34.77,
+  "modelError": 50.77,
+  "marketError": 45.5,
+  "pick": "Rutgers",
+  "pickLine": -29.5,
+  "units": 1.62,
+  "result": "LOSS",
   "tApproved": false,
   "tReasons": [
-   "Week 0 game",
-   "Memphis has no returning starting QB",
-   "Memphis has a new head coach"
+   "Rutgers has no returning starting QB"
   ],
   "tWhy": [
+   "not Week 0",
+   "not Friday",
+   "line moved only 0.0 pts"
+  ]
+ },
+ {
+  "week": 1,
+  "away": "Akron",
+  "home": "Wake Forest",
+  "awayScore": 16,
+  "homeScore": 38,
+  "actualMargin": 22,
+  "marketMargin": 24.5,
+  "modelMargin": 24.93,
+  "modelError": 2.93,
+  "marketError": 2.5,
+  "pick": "Wake Forest",
+  "pickLine": -24.5,
+  "units": 0.0,
+  "result": "LOSS",
+  "tApproved": false,
+  "tReasons": [
+   "Wake Forest has no returning starting QB"
+  ],
+  "tWhy": [
+   "not Week 0",
+   "not Friday",
+   "line moved only 0.0 pts"
+  ]
+ },
+ {
+  "week": 1,
+  "away": "Colorado",
+  "home": "Georgia Tech",
+  "awayScore": 14,
+  "homeScore": 13,
+  "actualMargin": -1,
+  "marketMargin": 6.5,
+  "modelMargin": 8.62,
+  "modelError": 9.62,
+  "marketError": 7.5,
+  "pick": "Georgia Tech",
+  "pickLine": -6.5,
+  "units": 0.0,
+  "result": "LOSS",
+  "tApproved": false,
+  "tReasons": [
+   "Georgia Tech has no returning starting QB"
+  ],
+  "tWhy": [
+   "not Week 0",
    "not Friday",
    "line moved only 1.0 pts"
+  ]
+ },
+ {
+  "week": 1,
+  "away": "UAB",
+  "home": "Illinois",
+  "awayScore": 23,
+  "homeScore": 42,
+  "actualMargin": 19,
+  "marketMargin": 27.5,
+  "modelMargin": 30.33,
+  "modelError": 11.33,
+  "marketError": 8.5,
+  "pick": "Illinois",
+  "pickLine": -27.5,
+  "units": 0.0,
+  "result": "LOSS",
+  "tApproved": false,
+  "tReasons": [
+   "Illinois has no returning starting QB"
+  ],
+  "tWhy": [
+   "not Week 0",
+   "not Friday",
+   "line moved only 0.0 pts"
   ]
  }
 ]
@@ -1121,772 +1169,6 @@
 
 <script id="game-data" type="application/json">
 [
- {
-  "date": "Sep 3",
-  "away": "UMass",
-  "home": "Rutgers",
-  "week": 1,
-  "aRS": 6,
-  "hRS": 8,
-  "tpAway": 0.0,
-  "tpHome": 0.0,
-  "pPush": 0.0,
-  "unitsSpread": 1.62,
-  "unitsML": 0.0,
-  "injAway": 0.0,
-  "injHome": 0.0,
-  "injNet": 0.0,
-  "injuries": [],
-  "mlEdgeHome": 1.37,
-  "mlEdgeAway": -1.37,
-  "openSpread": -30.5,
-  "totalMove": -1.0,
-  "recentMove": -2.0,
-  "nSnapshots": 6,
-  "spread": {
-   "away": "29.5",
-   "home": "-29.5",
-   "awayOdds": "-110",
-   "homeOdds": "-110",
-   "awayEV": -29.0,
-   "homeEV": 19.9,
-   "awayP": 37.2,
-   "homeP": 62.8,
-   "edge": 5.3
-  },
-  "ml": {
-   "away": "+2800",
-   "home": "-10000",
-   "awayEV": -42.0,
-   "homeEV": -1.0,
-   "awayP": 2.0,
-   "homeP": 98.0
-  },
-  "components": {
-   "away": {
-    "B": "-31.55",
-    "R": "-0.063",
-    "Q": "-0.5",
-    "OL": "-0.75",
-    "D": "-0.03",
-    "T": "-2.649",
-    "C": "1.55"
-   },
-   "home": {
-    "B": "4.49",
-    "R": "0.816",
-    "Q": "0.5",
-    "OL": "0.9",
-    "D": "0.8",
-    "T": "0.899",
-    "C": "0.65"
-   }
-  },
-  "tSpread": false,
-  "tSpreadReasons": [
-   "Rutgers has no returning starting QB"
-  ],
-  "tSpreadWhy": [
-   "not Week 0",
-   "not Friday",
-   "line moved only 1.0 pts"
-  ],
-  "tSpreadHeadline": "",
-  "tML": false,
-  "tMLReasons": [
-   "Rutgers has no returning starting QB"
-  ],
-  "tMLWhy": [
-   "not Week 0",
-   "not Friday",
-   "line moved only 1.0 pts"
-  ],
-  "tMLHeadline": ""
- },
- {
-  "date": "Sep 3",
-  "away": "Akron",
-  "home": "Wake Forest",
-  "week": 1,
-  "aRS": 9,
-  "hRS": 10,
-  "tpAway": 0.0,
-  "tpHome": 0.0,
-  "pPush": 0.0,
-  "unitsSpread": 0.0,
-  "unitsML": 0.0,
-  "injAway": 0.0,
-  "injHome": 0.0,
-  "injNet": 0.0,
-  "injuries": [],
-  "mlEdgeHome": -3.49,
-  "mlEdgeAway": 3.49,
-  "openSpread": -22.5,
-  "totalMove": 2.0,
-  "recentMove": 2.0,
-  "nSnapshots": 6,
-  "spread": {
-   "away": "24.5",
-   "home": "-24.5",
-   "awayOdds": "-115",
-   "homeOdds": "-105",
-   "awayEV": -8.6,
-   "homeEV": -0.2,
-   "awayP": 48.9,
-   "homeP": 51.1,
-   "edge": 0.4
-  },
-  "ml": {
-   "away": "+1400",
-   "home": "-4000",
-   "awayEV": 48.2,
-   "homeEV": -7.6,
-   "awayP": 9.9,
-   "homeP": 90.1
-  },
-  "components": {
-   "away": {
-    "B": "-15.4",
-    "R": "1.6",
-    "Q": "0.0",
-    "OL": "1.35",
-    "D": "-0.26",
-    "T": "-2.658",
-    "C": "1.55"
-   },
-   "home": {
-    "B": "6.25",
-    "R": "-0.646",
-    "Q": "0.5",
-    "OL": "-0.3",
-    "D": "3.63",
-    "T": "0.317",
-    "C": "0.65"
-   }
-  },
-  "tSpread": false,
-  "tSpreadReasons": [
-   "Wake Forest has no returning starting QB"
-  ],
-  "tSpreadWhy": [
-   "not Week 0",
-   "not Friday",
-   "line moved only 2.0 pts"
-  ],
-  "tSpreadHeadline": "",
-  "tML": false,
-  "tMLReasons": [
-   "Akron has no returning starting QB"
-  ],
-  "tMLWhy": [
-   "not Week 0",
-   "not Friday",
-   "line moved only 2.0 pts"
-  ],
-  "tMLHeadline": ""
- },
- {
-  "date": "Sep 3",
-  "away": "Colorado",
-  "home": "Georgia Tech",
-  "week": 1,
-  "aRS": 5,
-  "hRS": 7,
-  "tpAway": 0.0,
-  "tpHome": 0.0,
-  "pPush": 0.0,
-  "unitsSpread": 0.0,
-  "unitsML": 0.0,
-  "injAway": 0.0,
-  "injHome": 0.0,
-  "injNet": 0.0,
-  "injuries": [],
-  "mlEdgeHome": 0.91,
-  "mlEdgeAway": -0.91,
-  "openSpread": -7.5,
-  "totalMove": -1.0,
-  "recentMove": 0.0,
-  "nSnapshots": 6,
-  "spread": {
-   "away": "6.5",
-   "home": "-6.5",
-   "awayOdds": "-102",
-   "homeOdds": "-120",
-   "awayEV": -12.2,
-   "homeEV": 2.1,
-   "awayP": 44.3,
-   "homeP": 55.7,
-   "edge": 2.1
-  },
-  "ml": {
-   "away": "+205",
-   "home": "-255",
-   "awayEV": -7.2,
-   "homeEV": -3.1,
-   "awayP": 30.4,
-   "homeP": 69.6
-  },
-  "components": {
-   "away": {
-    "B": "-2.18",
-    "R": "1.6",
-    "Q": "0.0",
-    "OL": "-0.3",
-    "D": "-2.15",
-    "T": "0.498",
-    "C": "-0.25"
-   },
-   "home": {
-    "B": "7.94",
-    "R": "-1.619",
-    "Q": "-1.0",
-    "OL": "0.9",
-    "D": "1.39",
-    "T": "0.926",
-    "C": "-0.25"
-   }
-  },
-  "tSpread": false,
-  "tSpreadReasons": [
-   "Georgia Tech has no returning starting QB"
-  ],
-  "tSpreadWhy": [
-   "not Week 0",
-   "not Friday",
-   "line moved only 1.0 pts"
-  ],
-  "tSpreadHeadline": "",
-  "tML": false,
-  "tMLReasons": [
-   "Georgia Tech has no returning starting QB"
-  ],
-  "tMLWhy": [
-   "not Week 0",
-   "not Friday",
-   "line moved only 1.0 pts"
-  ],
-  "tMLHeadline": ""
- },
- {
-  "date": "Sep 3",
-  "away": "UAB",
-  "home": "Illinois",
-  "week": 1,
-  "aRS": 3,
-  "hRS": 7,
-  "tpAway": 0.0,
-  "tpHome": 0.0,
-  "pPush": 0.0,
-  "unitsSpread": 0.0,
-  "unitsML": 0.0,
-  "injAway": 0.0,
-  "injHome": 0.0,
-  "injNet": 0.0,
-  "injuries": [],
-  "mlEdgeHome": -0.66,
-  "mlEdgeAway": 0.66,
-  "openSpread": -27.5,
-  "totalMove": 0.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
-  "spread": {
-   "away": "27.5",
-   "home": "-27.5",
-   "awayOdds": "-105",
-   "homeOdds": "-115",
-   "awayEV": -15.9,
-   "homeEV": 6.4,
-   "awayP": 43.1,
-   "homeP": 56.9,
-   "edge": 2.8
-  },
-  "ml": {
-   "away": "+2000",
-   "home": "-7000",
-   "awayEV": 10.5,
-   "homeEV": -3.9,
-   "awayP": 5.3,
-   "homeP": 94.7
-  },
-  "components": {
-   "away": {
-    "B": "-14.12",
-    "R": "-1.619",
-    "Q": "0.0",
-    "OL": "0.9",
-    "D": "-2.15",
-    "T": "-2.411",
-    "C": "-0.061"
-   },
-   "home": {
-    "B": "13.1",
-    "R": "1.795",
-    "Q": "-0.5",
-    "OL": "-0.3",
-    "D": "-1.21",
-    "T": "1.077",
-    "C": "0.65"
-   }
-  },
-  "tSpread": false,
-  "tSpreadReasons": [
-   "Illinois has no returning starting QB"
-  ],
-  "tSpreadWhy": [
-   "not Week 0",
-   "not Friday",
-   "line moved only 0.0 pts"
-  ],
-  "tSpreadHeadline": "",
-  "tML": false,
-  "tMLReasons": [
-   "UAB has no returning starting QB",
-   "UAB has a new head coach"
-  ],
-  "tMLWhy": [
-   "not Week 0",
-   "not Friday",
-   "line moved only 0.0 pts"
-  ],
-  "tMLHeadline": ""
- },
- {
-  "date": "Sep 4",
-  "away": "San Jose State",
-  "home": "Eastern Michigan",
-  "week": 1,
-  "aRS": 2,
-  "hRS": 9,
-  "tpAway": 0.317,
-  "tpHome": 0.0,
-  "pPush": 0.0,
-  "unitsSpread": 0.0,
-  "unitsML": 0.0,
-  "injAway": 0.0,
-  "injHome": 0.0,
-  "injNet": 0.0,
-  "injuries": [],
-  "mlEdgeHome": 5.82,
-  "mlEdgeAway": -5.82,
-  "openSpread": -3.5,
-  "totalMove": -1.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
-  "spread": {
-   "away": "2.5",
-   "home": "-2.5",
-   "awayOdds": "+100",
-   "homeOdds": "-122",
-   "awayEV": -17.8,
-   "homeEV": 7.2,
-   "awayP": 41.1,
-   "homeP": 58.9,
-   "edge": 3.4
-  },
-  "ml": {
-   "away": "+128",
-   "home": "-154",
-   "awayEV": -17.6,
-   "homeEV": 5.3,
-   "awayP": 36.1,
-   "homeP": 63.8
-  },
-  "components": {
-   "away": {
-    "B": "-13.93",
-    "R": "-1.619",
-    "Q": "0.0",
-    "OL": "0.9",
-    "D": "-2.62",
-    "T": "-2.244",
-    "C": "1.55"
-   },
-   "home": {
-    "B": "-13.19",
-    "R": "0.138",
-    "Q": "3.5",
-    "OL": "0.9",
-    "D": "0.21",
-    "T": "-1.078",
-    "C": "2.0"
-   }
-  },
-  "tSpread": false,
-  "tSpreadReasons": [
-   "Friday kickoff"
-  ],
-  "tSpreadWhy": [
-   "not Week 0",
-   "line moved only 1.0 pts",
-   "returning QB + same head coach"
-  ],
-  "tSpreadHeadline": "",
-  "tML": false,
-  "tMLReasons": [
-   "Friday kickoff"
-  ],
-  "tMLWhy": [
-   "not Week 0",
-   "line moved only 1.0 pts",
-   "returning QB + same head coach"
-  ],
-  "tMLHeadline": ""
- },
- {
-  "date": "Sep 4",
-  "away": "UTEP",
-  "home": "Oklahoma",
-  "week": 1,
-  "aRS": 4,
-  "hRS": 14,
-  "tpAway": 0.0,
-  "tpHome": 0.0,
-  "pPush": 0.0,
-  "unitsSpread": 0.0,
-  "unitsML": 0.0,
-  "injAway": 0.0,
-  "injHome": 0.5,
-  "injNet": -0.5,
-  "injuries": [
-   {
-    "team": "Oklahoma",
-    "player": "Jake Maikkula",
-    "pos": "C",
-    "status": "OUT",
-    "adj": 0.5,
-    "detail": "Sprained MCL; out several weeks. Started 10 games at center in 2025",
-    "note": "ruled out",
-    "source": "CBS Sports / SI",
-    "date": "2026-08-25"
-   }
-  ],
-  "mlEdgeHome": null,
-  "mlEdgeAway": null,
-  "openSpread": -39.5,
-  "totalMove": 2.0,
-  "recentMove": 0.0,
-  "nSnapshots": 6,
-  "spread": {
-   "away": "41.5",
-   "home": "-41.5",
-   "awayOdds": "-115",
-   "homeOdds": "-105",
-   "awayEV": -18.5,
-   "homeEV": 10.1,
-   "awayP": 43.6,
-   "homeP": 56.4,
-   "edge": 2.7
-  },
-  "ml": {
-   "away": "+5500",
-   "home": null,
-   "awayEV": null,
-   "homeEV": null,
-   "awayP": 2.0,
-   "homeP": 98.0
-  },
-  "components": {
-   "away": {
-    "B": "-18.5",
-    "R": "-1.619",
-    "Q": "0.0",
-    "OL": "-0.75",
-    "D": "0.21",
-    "T": "-0.739",
-    "C": "1.55"
-   },
-   "home": {
-    "B": "16.38",
-    "R": "0.816",
-    "Q": "2.5",
-    "OL": "2.75",
-    "D": "1.74",
-    "T": "2.154",
-    "C": "2.0"
-   }
-  },
-  "tSpread": false,
-  "tSpreadReasons": [
-   "Friday kickoff"
-  ],
-  "tSpreadWhy": [
-   "elite defense",
-   "not Week 0",
-   "line moved only 2.0 pts",
-   "returning QB + same head coach"
-  ],
-  "tSpreadHeadline": "",
-  "tML": false,
-  "tMLReasons": [
-   "no moneyline offered"
-  ],
-  "tMLWhy": [],
-  "tMLHeadline": ""
- },
- {
-  "date": "Sep 4",
-  "away": "Toledo",
-  "home": "Michigan State",
-  "week": 1,
-  "aRS": 1,
-  "hRS": 5,
-  "tpAway": 0.0,
-  "tpHome": 0.0,
-  "pPush": 0.0,
-  "unitsSpread": 0.0,
-  "unitsML": 0.0,
-  "injAway": 0.0,
-  "injHome": 0.0,
-  "injNet": 0.0,
-  "injuries": [],
-  "mlEdgeHome": -8.82,
-  "mlEdgeAway": 8.82,
-  "openSpread": -11.5,
-  "totalMove": -2.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
-  "spread": {
-   "away": "9.5",
-   "home": "-9.5",
-   "awayOdds": "-105",
-   "homeOdds": "-115",
-   "awayEV": 9.7,
-   "homeEV": -18.1,
-   "awayP": 56.2,
-   "homeP": 43.8,
-   "edge": -2.3
-  },
-  "ml": {
-   "away": "+310",
-   "home": "-400",
-   "awayEV": 31.9,
-   "homeEV": -15.2,
-   "awayP": 32.2,
-   "homeP": 67.8
-  },
-  "components": {
-   "away": {
-    "B": "5.81",
-    "R": "-1.619",
-    "Q": "0.0",
-    "OL": "-0.75",
-    "D": "-2.62",
-    "T": "-1.029",
-    "C": "-0.061"
-   },
-   "home": {
-    "B": "2.8",
-    "R": "-0.646",
-    "Q": "-0.25",
-    "OL": "-0.3",
-    "D": "0.33",
-    "T": "-0.192",
-    "C": "-0.561"
-   }
-  },
-  "tSpread": false,
-  "tSpreadReasons": [
-   "Friday kickoff",
-   "Toledo has no returning starting QB",
-   "Toledo has a new head coach"
-  ],
-  "tSpreadWhy": [
-   "not Week 0",
-   "line moved only 2.0 pts"
-  ],
-  "tSpreadHeadline": "",
-  "tML": false,
-  "tMLReasons": [
-   "Friday kickoff",
-   "Toledo has no returning starting QB",
-   "Toledo has a new head coach"
-  ],
-  "tMLWhy": [
-   "not Week 0",
-   "line moved only 2.0 pts"
-  ],
-  "tMLHeadline": ""
- },
- {
-  "date": "Sep 4",
-  "away": "Fresno State",
-  "home": "USC",
-  "week": 1,
-  "aRS": 13,
-  "hRS": 15,
-  "tpAway": 0.0,
-  "tpHome": 0.0,
-  "pPush": 0.0,
-  "unitsSpread": 0.0,
-  "unitsML": 0.0,
-  "injAway": 0.0,
-  "injHome": 0.5,
-  "injNet": -0.5,
-  "injuries": [
-   {
-    "team": "USC",
-    "player": "Kilian O'Connor",
-    "pos": "C",
-    "status": "OUT",
-    "adj": 0.5,
-    "detail": "Knee, non-contact; OUT FOR SEASON. Starting center, Rimington watch list",
-    "note": "ruled out",
-    "source": "CBS Sports injury tracker",
-    "date": "2026-08-25"
-   }
-  ],
-  "mlEdgeHome": -1.91,
-  "mlEdgeAway": 1.91,
-  "openSpread": -23.5,
-  "totalMove": -2.0,
-  "recentMove": -3.0,
-  "nSnapshots": 6,
-  "spread": {
-   "away": "21.5",
-   "home": "-21.5",
-   "awayOdds": "-110",
-   "homeOdds": "-110",
-   "awayEV": -12.8,
-   "homeEV": 3.7,
-   "awayP": 45.7,
-   "homeP": 54.3,
-   "edge": 1.7
-  },
-  "ml": {
-   "away": "+1100",
-   "home": "-2500",
-   "awayEV": 18.6,
-   "homeEV": -6.3,
-   "awayP": 9.9,
-   "homeP": 90.1
-  },
-  "components": {
-   "away": {
-    "B": "-0.72",
-    "R": "1.795",
-    "Q": "0.0",
-    "OL": "1.35",
-    "D": "3.16",
-    "T": "-0.79",
-    "C": "1.55"
-   },
-   "home": {
-    "B": "17.77",
-    "R": "2.284",
-    "Q": "4.5",
-    "OL": "2.75",
-    "D": "1.86",
-    "T": "2.28",
-    "C": "0.25"
-   }
-  },
-  "tSpread": false,
-  "tSpreadReasons": [
-   "Friday kickoff",
-   "USC is desperate-tier and favoured (underdog only)"
-  ],
-  "tSpreadWhy": [
-   "not Week 0",
-   "line moved only 2.0 pts",
-   "returning QB + same head coach"
-  ],
-  "tSpreadHeadline": "",
-  "tML": false,
-  "tMLReasons": [
-   "Friday kickoff",
-   "Fresno State has no returning starting QB"
-  ],
-  "tMLWhy": [
-   "not Week 0",
-   "line moved only 2.0 pts"
-  ],
-  "tMLHeadline": ""
- },
- {
-  "date": "Sep 4",
-  "away": "Miami",
-  "home": "Stanford",
-  "week": 1,
-  "aRS": 10,
-  "hRS": 12,
-  "tpAway": 0.5,
-  "tpHome": 0.0,
-  "pPush": 0.0,
-  "unitsSpread": 0.0,
-  "unitsML": 0.0,
-  "injAway": 0.0,
-  "injHome": 0.0,
-  "injNet": 0.0,
-  "injuries": [],
-  "mlEdgeHome": 1.94,
-  "mlEdgeAway": -1.94,
-  "openSpread": 21.5,
-  "totalMove": -3.0,
-  "recentMove": -2.0,
-  "nSnapshots": 6,
-  "spread": {
-   "away": "-24.5",
-   "home": "24.5",
-   "awayOdds": "-106",
-   "homeOdds": "-114",
-   "awayEV": 6.5,
-   "homeEV": -15.2,
-   "awayP": 54.8,
-   "homeP": 45.2,
-   "edge": -1.9
-  },
-  "ml": {
-   "away": "-4000",
-   "home": "+1400",
-   "awayEV": -6.0,
-   "homeEV": 25.0,
-   "awayP": 91.7,
-   "homeP": 8.3
-  },
-  "components": {
-   "away": {
-    "B": "24.55",
-    "R": "0.816",
-    "Q": "2.0",
-    "OL": "-0.3",
-    "D": "2.21",
-    "T": "3.137",
-    "C": "1.55"
-   },
-   "home": {
-    "B": "-1.83",
-    "R": "-0.157",
-    "Q": "0.0",
-    "OL": "2.3",
-    "D": "2.1",
-    "T": "1.251",
-    "C": "-1.554"
-   }
-  },
-  "tSpread": false,
-  "tSpreadReasons": [
-   "Friday kickoff",
-   "Miami has no returning starting QB"
-  ],
-  "tSpreadWhy": [
-   "juggernaut",
-   "QB/run combo",
-   "not Week 0",
-   "line moved only 3.0 pts"
-  ],
-  "tSpreadHeadline": "",
-  "tML": false,
-  "tMLReasons": [
-   "Friday kickoff",
-   "Stanford has no returning starting QB",
-   "Stanford has a new head coach"
-  ],
-  "tMLWhy": [
-   "not Week 0",
-   "line moved only 3.0 pts"
-  ],
-  "tMLHeadline": ""
- },
  {
   "date": "Sep 5",
   "away": "Ohio",
@@ -1907,15 +1189,15 @@
   "mlEdgeAway": 3.49,
   "openSpread": -23.5,
   "totalMove": 0.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "23.5",
    "home": "-23.5",
-   "awayOdds": "-110",
-   "homeOdds": "-110",
-   "awayEV": 8.2,
-   "homeEV": -17.3,
+   "awayOdds": "-106",
+   "homeOdds": "-114",
+   "awayEV": 10.2,
+   "homeEV": -18.7,
    "awayP": 56.7,
    "homeP": 43.3,
    "edge": -2.6
@@ -1987,28 +1269,28 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -1.02,
-  "mlEdgeAway": 1.02,
+  "mlEdgeHome": -0.5,
+  "mlEdgeAway": 0.5,
   "openSpread": -18.5,
   "totalMove": 2.0,
   "recentMove": 0.0,
-  "nSnapshots": 6,
+  "nSnapshots": 7,
   "spread": {
    "away": "20.5",
    "home": "-20.5",
-   "awayOdds": "-106",
-   "homeOdds": "-114",
-   "awayEV": -10.8,
-   "homeEV": 1.6,
+   "awayOdds": "-104",
+   "homeOdds": "-118",
+   "awayEV": -10.0,
+   "homeEV": -0.1,
    "awayP": 45.9,
    "homeP": 54.1,
    "edge": 1.6
   },
   "ml": {
-   "away": "+980",
-   "home": "-2000",
-   "awayEV": 6.7,
-   "homeEV": -5.4,
+   "away": "+920",
+   "home": "-1800",
+   "awayEV": 0.8,
+   "homeEV": -4.9,
    "awayP": 9.9,
    "homeP": 90.1
   },
@@ -2069,28 +1351,28 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -0.0,
-  "mlEdgeAway": 0.0,
+  "mlEdgeHome": 3.76,
+  "mlEdgeAway": -3.76,
   "openSpread": -6.5,
   "totalMove": 0.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "6.5",
    "home": "-6.5",
-   "awayOdds": "+100",
-   "homeOdds": "-122",
-   "awayEV": -13.5,
-   "homeEV": 3.2,
+   "awayOdds": "-115",
+   "homeOdds": "-105",
+   "awayEV": -19.1,
+   "homeEV": 10.8,
    "awayP": 43.3,
    "homeP": 56.7,
    "edge": 2.5
   },
   "ml": {
-   "away": "+215",
-   "home": "-265",
-   "awayEV": -4.2,
-   "homeEV": -4.2,
+   "away": "+180",
+   "home": "-220",
+   "awayEV": -14.8,
+   "homeEV": 1.2,
    "awayP": 30.4,
    "homeP": 69.6
   },
@@ -2125,15 +1407,17 @@
    "line moved only 0.0 pts"
   ],
   "tSpreadHeadline": "",
-  "tML": true,
-  "tMLReasons": [],
+  "tML": false,
+  "tMLReasons": [
+   "James Madison has no returning starting QB",
+   "James Madison has a new head coach"
+  ],
   "tMLWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 0.0 pts",
-   "returning QB + same head coach"
+   "line moved only 0.0 pts"
   ],
-  "tMLHeadline": "clears all rules"
+  "tMLHeadline": ""
  },
  {
   "date": "Sep 5",
@@ -2151,30 +1435,30 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -4.39,
-  "mlEdgeAway": 4.39,
+  "mlEdgeHome": -1.39,
+  "mlEdgeAway": 1.39,
   "openSpread": -18.5,
-  "totalMove": 2.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
+  "totalMove": 3.0,
+  "recentMove": 1.0,
+  "nSnapshots": 7,
   "spread": {
-   "away": "20.5",
-   "home": "-20.5",
-   "awayOdds": "-104",
-   "homeOdds": "-118",
-   "awayEV": 1.8,
-   "homeEV": -11.1,
-   "awayP": 51.9,
-   "homeP": 48.1,
-   "edge": -0.8
+   "away": "21.5",
+   "home": "-21.5",
+   "awayOdds": "-115",
+   "homeOdds": "-105",
+   "awayEV": -1.3,
+   "homeEV": -7.8,
+   "awayP": 52.8,
+   "homeP": 47.2,
+   "edge": -1.1
   },
   "ml": {
    "away": "+920",
    "home": "-1800",
-   "awayEV": 40.4,
-   "homeEV": -9.0,
-   "awayP": 13.8,
-   "homeP": 86.2
+   "awayEV": 9.8,
+   "homeEV": -5.8,
+   "awayP": 10.8,
+   "homeP": 89.2
   },
   "components": {
    "away": {
@@ -2204,7 +1488,7 @@
   "tSpreadWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 2.0 pts"
+   "line moved only 3.0 pts"
   ],
   "tSpreadHeadline": "",
   "tML": false,
@@ -2215,7 +1499,7 @@
   "tMLWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 2.0 pts"
+   "line moved only 3.0 pts"
   ],
   "tMLHeadline": ""
  },
@@ -2235,12 +1519,12 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": 0.29,
-  "mlEdgeAway": -0.29,
+  "mlEdgeHome": 0.06,
+  "mlEdgeAway": -0.06,
   "openSpread": -15.5,
   "totalMove": 1.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "16.5",
    "home": "-16.5",
@@ -2253,10 +1537,10 @@
    "edge": 1.7
   },
   "ml": {
-   "away": "+540",
-   "home": "-800",
-   "awayEV": -6.2,
-   "homeEV": -4.0,
+   "away": "+550",
+   "home": "-820",
+   "awayEV": -4.7,
+   "homeEV": -4.2,
    "awayP": 14.7,
    "homeP": 85.3
   },
@@ -2320,7 +1604,7 @@
   "openSpread": -39.5,
   "totalMove": 1.0,
   "recentMove": 0.0,
-  "nSnapshots": 6,
+  "nSnapshots": 7,
   "spread": {
    "away": "40.5",
    "home": "-40.5",
@@ -2388,7 +1672,7 @@
   "tpAway": 0.0,
   "tpHome": 0.0,
   "pPush": 0.0,
-  "unitsSpread": 0.0,
+  "unitsSpread": 1.47,
   "unitsML": 0.0,
   "injAway": 0.0,
   "injHome": 0.5,
@@ -2409,19 +1693,19 @@
   "mlEdgeHome": -5.27,
   "mlEdgeAway": 5.27,
   "openSpread": -25.5,
-  "totalMove": 2.0,
-  "recentMove": -2.0,
-  "nSnapshots": 6,
+  "totalMove": 3.0,
+  "recentMove": 1.0,
+  "nSnapshots": 7,
   "spread": {
-   "away": "27.5",
-   "home": "-27.5",
-   "awayOdds": "-104",
-   "homeOdds": "-118",
-   "awayEV": 18.4,
-   "homeEV": -26.8,
-   "awayP": 60.4,
-   "homeP": 39.6,
-   "edge": -4.2
+   "away": "28.5",
+   "home": "-28.5",
+   "awayOdds": "-122",
+   "homeOdds": "+100",
+   "awayEV": 11.3,
+   "homeEV": -22.4,
+   "awayP": 61.2,
+   "homeP": 38.8,
+   "edge": -4.6
   },
   "ml": {
    "away": "+2000",
@@ -2458,7 +1742,7 @@
   "tSpreadWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 2.0 pts"
+   "line moved only 3.0 pts"
   ],
   "tSpreadHeadline": "",
   "tML": false,
@@ -2468,7 +1752,7 @@
   "tMLWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 2.0 pts"
+   "line moved only 3.0 pts"
   ],
   "tMLHeadline": ""
  },
@@ -2491,22 +1775,22 @@
   "mlEdgeHome": null,
   "mlEdgeAway": null,
   "openSpread": -50.5,
-  "totalMove": 0.0,
+  "totalMove": -1.0,
   "recentMove": -1.0,
-  "nSnapshots": 6,
+  "nSnapshots": 7,
   "spread": {
-   "away": "50.5",
-   "home": "-50.5",
-   "awayOdds": "-110",
-   "homeOdds": "-110",
-   "awayEV": -20.9,
-   "homeEV": 11.8,
-   "awayP": 41.4,
-   "homeP": 58.6,
-   "edge": 3.8
+   "away": "49.5",
+   "home": "-49.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": -20.6,
+   "homeEV": 11.0,
+   "awayP": 40.6,
+   "homeP": 59.4,
+   "edge": 4.1
   },
   "ml": {
-   "away": "+8000",
+   "away": null,
    "home": null,
    "awayEV": null,
    "homeEV": null,
@@ -2538,7 +1822,7 @@
   "tSpreadWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 0.0 pts",
+   "line moved only 1.0 pts",
    "returning QB + same head coach"
   ],
   "tSpreadHeadline": "clears all rules",
@@ -2614,15 +1898,15 @@
   "mlEdgeAway": null,
   "openSpread": -34.5,
   "totalMove": 2.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "36.5",
    "home": "-36.5",
-   "awayOdds": "-110",
-   "homeOdds": "-110",
-   "awayEV": 9.6,
-   "homeEV": -18.7,
+   "awayOdds": "-115",
+   "homeOdds": "-105",
+   "awayEV": 7.3,
+   "homeEV": -16.8,
    "awayP": 57.4,
    "homeP": 42.6,
    "edge": -3.1
@@ -2688,12 +1972,12 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -3.49,
-  "mlEdgeAway": 3.49,
+  "mlEdgeHome": -3.86,
+  "mlEdgeAway": 3.86,
   "openSpread": -24.5,
   "totalMove": 0.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "24.5",
    "home": "-24.5",
@@ -2706,9 +1990,9 @@
    "edge": 1.2
   },
   "ml": {
-   "away": "+1400",
+   "away": "+1500",
    "home": "-4000",
-   "awayEV": 48.2,
+   "awayEV": 58.1,
    "homeEV": -7.6,
    "awayP": 9.9,
    "homeP": 90.1
@@ -2770,12 +2054,12 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -4.47,
-  "mlEdgeAway": 4.47,
+  "mlEdgeHome": -4.84,
+  "mlEdgeAway": 4.84,
   "openSpread": -7.5,
   "totalMove": 0.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "7.5",
    "home": "-7.5",
@@ -2788,10 +2072,10 @@
    "edge": 0.4
   },
   "ml": {
-   "away": "+245",
-   "home": "-310",
-   "awayEV": 11.0,
-   "homeEV": -10.3,
+   "away": "+250",
+   "home": "-315",
+   "awayEV": 12.6,
+   "homeEV": -10.7,
    "awayP": 32.2,
    "homeP": 67.8
   },
@@ -2852,28 +2136,28 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -3.49,
-  "mlEdgeAway": 3.49,
+  "mlEdgeHome": -2.95,
+  "mlEdgeAway": 2.95,
   "openSpread": -23.5,
-  "totalMove": 1.0,
-  "recentMove": -2.0,
-  "nSnapshots": 6,
+  "totalMove": 0.0,
+  "recentMove": -1.0,
+  "nSnapshots": 7,
   "spread": {
-   "away": "24.5",
-   "home": "-24.5",
-   "awayOdds": "-120",
-   "homeOdds": "-102",
-   "awayEV": 2.2,
-   "homeEV": -12.4,
-   "awayP": 55.8,
-   "homeP": 44.2,
-   "edge": -2.3
+   "away": "23.5",
+   "home": "-23.5",
+   "awayOdds": "-112",
+   "homeOdds": "-108",
+   "awayEV": 4.0,
+   "homeEV": -13.2,
+   "awayP": 54.9,
+   "homeP": 45.1,
+   "edge": -2.0
   },
   "ml": {
-   "away": "+1400",
-   "home": "-4000",
-   "awayEV": 48.2,
-   "homeEV": -7.6,
+   "away": "+1280",
+   "home": "-3500",
+   "awayEV": 36.4,
+   "homeEV": -7.3,
    "awayP": 9.9,
    "homeP": 90.1
   },
@@ -2902,7 +2186,7 @@
   "tSpreadWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 1.0 pts",
+   "line moved only 0.0 pts",
    "returning QB + same head coach"
   ],
   "tSpreadHeadline": "clears all rules",
@@ -2911,7 +2195,7 @@
   "tMLWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 1.0 pts",
+   "line moved only 0.0 pts",
    "returning QB + same head coach"
   ],
   "tMLHeadline": "clears all rules"
@@ -2932,28 +2216,28 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -3.63,
-  "mlEdgeAway": 3.63,
+  "mlEdgeHome": -4.47,
+  "mlEdgeAway": 4.47,
   "openSpread": -10.5,
   "totalMove": -3.0,
-  "recentMove": -2.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "7.5",
    "home": "-7.5",
-   "awayOdds": "-112",
-   "homeOdds": "-108",
-   "awayEV": -5.7,
-   "homeEV": -3.3,
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -4.9,
+   "homeEV": -4.2,
    "awayP": 49.8,
    "homeP": 50.2,
    "edge": 0.1
   },
   "ml": {
-   "away": "+235",
-   "home": "-295",
-   "awayEV": 7.8,
-   "homeEV": -9.2,
+   "away": "+245",
+   "home": "-310",
+   "awayEV": 11.0,
+   "homeEV": -10.3,
    "awayP": 32.2,
    "homeP": 67.8
   },
@@ -3016,28 +2300,28 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -2.73,
-  "mlEdgeAway": 2.73,
+  "mlEdgeHome": -3.93,
+  "mlEdgeAway": 3.93,
   "openSpread": -7.5,
   "totalMove": 0.0,
   "recentMove": 0.0,
-  "nSnapshots": 6,
+  "nSnapshots": 7,
   "spread": {
    "away": "7.5",
    "home": "-7.5",
-   "awayOdds": "-120",
-   "homeOdds": "-102",
-   "awayEV": -6.1,
-   "homeEV": -3.4,
+   "awayOdds": "-115",
+   "homeOdds": "-105",
+   "awayEV": -4.2,
+   "homeEV": -4.8,
    "awayP": 51.2,
    "homeP": 48.8,
    "edge": -0.5
   },
   "ml": {
-   "away": "+225",
-   "home": "-280",
-   "awayEV": 4.6,
-   "homeEV": -8.0,
+   "away": "+240",
+   "home": "-295",
+   "awayEV": 9.4,
+   "homeEV": -9.2,
    "awayP": 32.2,
    "homeP": 67.8
   },
@@ -3064,11 +2348,9 @@
   "tSpread": false,
   "tSpreadReasons": [
    "Baylor game",
-   "Auburn has no returning starting QB",
-   "Auburn has a new head coach"
+   "Baylor has no returning starting QB"
   ],
   "tSpreadWhy": [
-   "sleeper",
    "not Week 0",
    "not Friday",
    "line moved only 0.0 pts"
@@ -3114,27 +2396,27 @@
     "date": "2026-08-25"
    }
   ],
-  "mlEdgeHome": -6.0,
-  "mlEdgeAway": 6.0,
+  "mlEdgeHome": -5.68,
+  "mlEdgeAway": 5.68,
   "openSpread": -31.5,
   "totalMove": -2.0,
-  "recentMove": -2.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "29.5",
    "home": "-29.5",
-   "awayOdds": "-105",
-   "homeOdds": "-115",
-   "awayEV": 8.4,
-   "homeEV": -16.8,
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": 6.0,
+   "homeEV": -15.1,
    "awayP": 55.5,
    "homeP": 44.5,
    "edge": -2.3
   },
   "ml": {
-   "away": "+2400",
+   "away": "+2200",
    "home": "-10000",
-   "awayEV": 147.1,
+   "awayEV": 127.3,
    "homeEV": -9.0,
    "awayP": 9.9,
    "homeP": 90.1
@@ -3188,34 +2470,34 @@
   "tpAway": 0.0,
   "tpHome": 0.0,
   "pPush": 0.0,
-  "unitsSpread": 1.86,
+  "unitsSpread": 1.94,
   "unitsML": 2.0,
   "injAway": 0.0,
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": 27.19,
-  "mlEdgeAway": -27.19,
+  "mlEdgeHome": 26.92,
+  "mlEdgeAway": -26.92,
   "openSpread": 13.5,
   "totalMove": 0.0,
-  "recentMove": 1.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "-13.5",
    "home": "13.5",
-   "awayOdds": "-106",
-   "homeOdds": "-114",
-   "awayEV": -31.5,
-   "homeEV": 21.6,
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -32.7,
+   "homeEV": 23.6,
    "awayP": 35.2,
    "homeP": 64.8,
    "edge": 6.0
   },
   "ml": {
    "away": "-550",
-   "home": "+450",
+   "home": "+440",
    "awayEV": -34.9,
-   "homeEV": 146.8,
+   "homeEV": 142.3,
    "awayP": 55.1,
    "homeP": 44.9
   },
@@ -3279,20 +2561,20 @@
   "openSpread": -30.5,
   "totalMove": 1.0,
   "recentMove": 0.0,
-  "nSnapshots": 6,
+  "nSnapshots": 7,
   "spread": {
    "away": "31.5",
    "home": "-31.5",
-   "awayOdds": "-110",
-   "homeOdds": "-110",
-   "awayEV": -14.4,
-   "homeEV": 5.3,
+   "awayOdds": "-114",
+   "homeOdds": "-106",
+   "awayEV": -15.8,
+   "homeEV": 7.2,
    "awayP": 44.9,
    "homeP": 55.1,
    "edge": 2.0
   },
   "ml": {
-   "away": "+5500",
+   "away": "+5000",
    "home": null,
    "awayEV": null,
    "homeEV": null,
@@ -3352,30 +2634,30 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -6.13,
-  "mlEdgeAway": 6.13,
+  "mlEdgeHome": -6.08,
+  "mlEdgeAway": 6.08,
   "openSpread": -3.5,
-  "totalMove": -1.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
+  "totalMove": 0.0,
+  "recentMove": 1.0,
+  "nSnapshots": 7,
   "spread": {
-   "away": "2.5",
-   "home": "-2.5",
-   "awayOdds": "+100",
-   "homeOdds": "-122",
-   "awayEV": 9.1,
-   "homeEV": -17.3,
-   "awayP": 54.6,
-   "homeP": 45.4,
-   "edge": -1.6
+   "away": "3.5",
+   "home": "-3.5",
+   "awayOdds": "-122",
+   "homeOdds": "+100",
+   "awayEV": 1.0,
+   "homeEV": -11.0,
+   "awayP": 55.5,
+   "homeP": 44.5,
+   "edge": -2.0
   },
   "ml": {
    "away": "+130",
    "home": "-156",
-   "awayEV": 9.9,
-   "homeEV": -14.3,
-   "awayP": 47.8,
-   "homeP": 52.2
+   "awayEV": 9.8,
+   "homeEV": -14.2,
+   "awayP": 47.7,
+   "homeP": 52.3
   },
   "components": {
    "away": {
@@ -3404,7 +2686,7 @@
   "tSpreadWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 1.0 pts"
+   "line moved only 0.0 pts"
   ],
   "tSpreadHeadline": "",
   "tML": false,
@@ -3414,7 +2696,7 @@
   "tMLWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 1.0 pts"
+   "line moved only 0.0 pts"
   ],
   "tMLHeadline": ""
  },
@@ -3434,28 +2716,28 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": 3.07,
-  "mlEdgeAway": -3.07,
+  "mlEdgeHome": 1.78,
+  "mlEdgeAway": -1.78,
   "openSpread": -11.5,
-  "totalMove": 2.0,
-  "recentMove": 0.0,
-  "nSnapshots": 6,
+  "totalMove": 3.0,
+  "recentMove": 1.0,
+  "nSnapshots": 7,
   "spread": {
-   "away": "13.5",
-   "home": "-13.5",
-   "awayOdds": "-105",
-   "homeOdds": "-115",
-   "awayEV": -20.5,
-   "homeEV": 10.8,
-   "awayP": 40.7,
-   "homeP": 59.3,
-   "edge": 3.6
+   "away": "14.5",
+   "home": "-14.5",
+   "awayOdds": "-108",
+   "homeOdds": "-112",
+   "awayEV": -19.8,
+   "homeEV": 10.4,
+   "awayP": 41.6,
+   "homeP": 58.4,
+   "edge": 3.2
   },
   "ml": {
-   "away": "+440",
-   "home": "-610",
-   "awayEV": -20.8,
-   "homeEV": -0.7,
+   "away": "+480",
+   "home": "-710",
+   "awayEV": -15.0,
+   "homeEV": -2.6,
    "awayP": 14.7,
    "homeP": 85.3
   },
@@ -3487,7 +2769,7 @@
   "tSpreadWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 2.0 pts"
+   "line moved only 3.0 pts"
   ],
   "tSpreadHeadline": "",
   "tML": false,
@@ -3498,7 +2780,7 @@
   "tMLWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 2.0 pts"
+   "line moved only 3.0 pts"
   ],
   "tMLHeadline": ""
  },
@@ -3513,35 +2795,35 @@
   "tpHome": 0.033,
   "pPush": 0.0,
   "unitsSpread": 0.0,
-  "unitsML": 1.05,
+  "unitsML": 0.0,
   "injAway": 0.0,
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -9.62,
-  "mlEdgeAway": 9.62,
+  "mlEdgeHome": -8.24,
+  "mlEdgeAway": 8.24,
   "openSpread": -10.5,
-  "totalMove": 1.0,
-  "recentMove": 2.0,
-  "nSnapshots": 6,
+  "totalMove": 0.0,
+  "recentMove": -1.0,
+  "nSnapshots": 7,
   "spread": {
-   "away": "11.5",
-   "home": "-11.5",
+   "away": "10.5",
+   "home": "-10.5",
    "awayOdds": "-110",
    "homeOdds": "-110",
-   "awayEV": 7.3,
-   "homeEV": -16.4,
-   "awayP": 56.2,
-   "homeP": 43.8,
-   "edge": -2.4
+   "awayEV": 5.5,
+   "homeEV": -14.6,
+   "awayP": 55.3,
+   "homeP": 44.7,
+   "edge": -2.0
   },
   "ml": {
-   "away": "+360",
-   "home": "-480",
-   "awayEV": 40.0,
-   "homeEV": -15.9,
-   "awayP": 30.4,
-   "homeP": 69.6
+   "away": "+330",
+   "home": "-430",
+   "awayEV": 31.2,
+   "homeEV": -14.4,
+   "awayP": 30.5,
+   "homeP": 69.5
   },
   "components": {
    "away": {
@@ -3570,7 +2852,7 @@
   "tSpreadWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 1.0 pts"
+   "line moved only 0.0 pts"
   ],
   "tSpreadHeadline": "",
   "tML": false,
@@ -3580,7 +2862,7 @@
   "tMLWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 1.0 pts"
+   "line moved only 0.0 pts"
   ],
   "tMLHeadline": ""
  },
@@ -3600,28 +2882,28 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -1.19,
-  "mlEdgeAway": 1.19,
+  "mlEdgeHome": -0.79,
+  "mlEdgeAway": 0.79,
   "openSpread": -17.5,
   "totalMove": -1.0,
   "recentMove": 0.0,
-  "nSnapshots": 6,
+  "nSnapshots": 7,
   "spread": {
    "away": "16.5",
    "home": "-16.5",
    "awayOdds": "-105",
    "homeOdds": "-115",
-   "awayEV": -10.0,
+   "awayEV": -9.9,
    "homeEV": 0.7,
-   "awayP": 46.1,
-   "homeP": 53.9,
+   "awayP": 46.2,
+   "homeP": 53.8,
    "edge": 1.5
   },
   "ml": {
-   "away": "+610",
-   "home": "-950",
-   "awayEV": 4.1,
-   "homeEV": -5.7,
+   "away": "+590",
+   "home": "-900",
+   "awayEV": 1.1,
+   "homeEV": -5.2,
    "awayP": 14.7,
    "homeP": 85.3
   },
@@ -3685,17 +2967,17 @@
   "mlEdgeAway": 5.27,
   "openSpread": -25.5,
   "totalMove": 2.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "27.5",
    "home": "-27.5",
    "awayOdds": "-105",
    "homeOdds": "-115",
-   "awayEV": 18.1,
-   "homeEV": -26.2,
+   "awayEV": 18.0,
+   "homeEV": -26.1,
    "awayP": 60.5,
-   "homeP": 39.5,
+   "homeP": 39.6,
    "edge": -4.2
   },
   "ml": {
@@ -3778,7 +3060,7 @@
   "openSpread": -39.5,
   "totalMove": 1.0,
   "recentMove": 0.0,
-  "nSnapshots": 6,
+  "nSnapshots": 7,
   "spread": {
    "away": "40.5",
    "home": "-40.5",
@@ -3852,28 +3134,28 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -6.0,
-  "mlEdgeAway": 6.0,
+  "mlEdgeHome": -5.27,
+  "mlEdgeAway": 5.27,
   "openSpread": -29.5,
   "totalMove": -1.0,
-  "recentMove": -2.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "28.5",
    "home": "-28.5",
-   "awayOdds": "-108",
-   "homeOdds": "-112",
-   "awayEV": 3.1,
-   "homeEV": -12.1,
+   "awayOdds": "-115",
+   "homeOdds": "-105",
+   "awayEV": 0.1,
+   "homeEV": -9.3,
    "awayP": 53.5,
    "homeP": 46.5,
    "edge": -1.4
   },
   "ml": {
-   "away": "+2400",
-   "home": "-10000",
-   "awayEV": 147.1,
-   "homeEV": -9.0,
+   "away": "+2000",
+   "home": "-7000",
+   "awayEV": 107.5,
+   "homeEV": -8.6,
    "awayP": 9.9,
    "homeP": 90.1
   },
@@ -3955,28 +3237,28 @@
     "date": "2026-08-25"
    }
   ],
-  "mlEdgeHome": -7.37,
-  "mlEdgeAway": 7.37,
+  "mlEdgeHome": -7.28,
+  "mlEdgeAway": 7.28,
   "openSpread": -11.5,
   "totalMove": -1.0,
-  "recentMove": 1.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "10.5",
    "home": "-10.5",
-   "awayOdds": "-120",
-   "homeOdds": "-102",
-   "awayEV": -1.5,
-   "homeEV": -8.4,
+   "awayOdds": "-118",
+   "homeOdds": "-104",
+   "awayEV": -0.7,
+   "homeEV": -9.2,
    "awayP": 53.7,
    "homeP": 46.3,
    "edge": -1.4
   },
   "ml": {
    "away": "+315",
-   "home": "-410",
+   "home": "-400",
    "awayEV": 26.3,
-   "homeEV": -13.5,
+   "homeEV": -13.0,
    "awayP": 30.4,
    "homeP": 69.6
   },
@@ -4043,15 +3325,15 @@
   "mlEdgeAway": 4.21,
   "openSpread": -26.5,
   "totalMove": 0.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "26.5",
    "home": "-26.5",
-   "awayOdds": "-105",
-   "homeOdds": "-115",
-   "awayEV": 13.3,
-   "homeEV": -21.6,
+   "awayOdds": "-108",
+   "homeOdds": "-112",
+   "awayEV": 11.8,
+   "homeEV": -20.6,
    "awayP": 58.0,
    "homeP": 42.0,
    "edge": -3.4
@@ -4114,7 +3396,7 @@
   "tpHome": 0.0,
   "pPush": 0.0,
   "unitsSpread": 0.0,
-  "unitsML": 0.0,
+  "unitsML": 1.02,
   "injAway": 0.0,
   "injHome": 3.5,
   "injNet": -3.5,
@@ -4131,28 +3413,28 @@
     "date": "2026-08-27"
    }
   ],
-  "mlEdgeHome": -7.37,
-  "mlEdgeAway": 7.37,
+  "mlEdgeHome": -9.17,
+  "mlEdgeAway": 9.17,
   "openSpread": -12.5,
   "totalMove": -2.0,
-  "recentMove": -3.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "10.5",
    "home": "-10.5",
-   "awayOdds": "-118",
-   "homeOdds": "-104",
-   "awayEV": -9.9,
-   "homeEV": 0.5,
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": -4.8,
+   "homeEV": -4.2,
    "awayP": 48.8,
    "homeP": 51.2,
    "edge": 0.5
   },
   "ml": {
-   "away": "+315",
-   "home": "-410",
-   "awayEV": 26.3,
-   "homeEV": -13.5,
+   "away": "+350",
+   "home": "-465",
+   "awayEV": 36.9,
+   "homeEV": -15.5,
    "awayP": 30.4,
    "homeP": 69.6
   },
@@ -4209,7 +3491,7 @@
   "tpHome": 0.23,
   "pPush": 0.0,
   "unitsSpread": 0.0,
-  "unitsML": 0.98,
+  "unitsML": 0.99,
   "injAway": 0.0,
   "injHome": 1.0,
   "injNet": -1.0,
@@ -4231,14 +3513,14 @@
   "openSpread": 2.5,
   "totalMove": -1.0,
   "recentMove": 0.0,
-  "nSnapshots": 6,
+  "nSnapshots": 7,
   "spread": {
    "away": "-3.5",
    "home": "3.5",
-   "awayOdds": "+104",
-   "homeOdds": "-128",
-   "awayEV": -6.7,
-   "homeEV": -3.4,
+   "awayOdds": "+100",
+   "homeOdds": "-122",
+   "awayEV": -8.5,
+   "homeEV": -1.3,
    "awayP": 45.8,
    "homeP": 54.2,
    "edge": 1.6
@@ -4308,28 +3590,28 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": 5.56,
-  "mlEdgeAway": -5.56,
+  "mlEdgeHome": 5.04,
+  "mlEdgeAway": -5.04,
   "openSpread": -1.5,
-  "totalMove": -3.0,
-  "recentMove": 0.0,
-  "nSnapshots": 6,
+  "totalMove": -4.0,
+  "recentMove": -1.0,
+  "nSnapshots": 7,
   "spread": {
-   "away": "-1.5",
-   "home": "1.5",
-   "awayOdds": "-114",
-   "homeOdds": "-106",
-   "awayEV": -11.2,
-   "homeEV": 2.4,
-   "awayP": 47.3,
-   "homeP": 52.7,
-   "edge": 1.0
+   "away": "-2.5",
+   "home": "2.5",
+   "awayOdds": "-106",
+   "homeOdds": "-114",
+   "awayEV": -9.9,
+   "homeEV": 0.7,
+   "awayP": 46.4,
+   "homeP": 53.6,
+   "edge": 1.4
   },
   "ml": {
-   "away": "-126",
-   "home": "+105",
-   "awayEV": -14.3,
-   "homeEV": 7.1,
+   "away": "-122",
+   "home": "+104",
+   "awayEV": -13.0,
+   "homeEV": 6.5,
    "awayP": 47.8,
    "homeP": 52.2
   },
@@ -4361,7 +3643,7 @@
   "tSpreadWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 3.0 pts"
+   "line moved only 4.0 pts"
   ],
   "tSpreadHeadline": "",
   "tML": false,
@@ -4372,7 +3654,7 @@
   "tMLWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 3.0 pts"
+   "line moved only 4.0 pts"
   ],
   "tMLHeadline": ""
  },
@@ -4392,30 +3674,30 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": 2.24,
-  "mlEdgeAway": -2.24,
+  "mlEdgeHome": 2.4,
+  "mlEdgeAway": -2.4,
   "openSpread": 2.5,
-  "totalMove": 0.0,
-  "recentMove": 0.0,
-  "nSnapshots": 6,
+  "totalMove": 1.0,
+  "recentMove": 1.0,
+  "nSnapshots": 7,
   "spread": {
-   "away": "-2.5",
-   "home": "2.5",
-   "awayOdds": "-115",
-   "homeOdds": "-105",
-   "awayEV": -1.9,
-   "homeEV": -7.2,
-   "awayP": 52.5,
-   "homeP": 47.5,
-   "edge": -0.9
+   "away": "-1.5",
+   "home": "1.5",
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": 4.3,
+   "homeEV": -13.0,
+   "awayP": 53.4,
+   "homeP": 46.6,
+   "edge": -1.3
   },
   "ml": {
-   "away": "-137",
-   "home": "+114",
-   "awayEV": -8.2,
-   "homeEV": 0.5,
-   "awayP": 53.0,
-   "homeP": 46.9
+   "away": "-111",
+   "home": "-108",
+   "awayEV": -8.9,
+   "homeEV": 0.3,
+   "awayP": 47.9,
+   "homeP": 52.1
   },
   "components": {
    "away": {
@@ -4442,7 +3724,7 @@
   "tSpreadWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 0.0 pts",
+   "line moved only 1.0 pts",
    "returning QB + same head coach"
   ],
   "tSpreadHeadline": "clears all rules",
@@ -4451,7 +3733,7 @@
   "tMLWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 0.0 pts",
+   "line moved only 1.0 pts",
    "returning QB + same head coach"
   ],
   "tMLHeadline": "clears all rules"
@@ -4472,28 +3754,28 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -2.29,
-  "mlEdgeAway": 2.29,
+  "mlEdgeHome": -2.52,
+  "mlEdgeAway": 2.52,
   "openSpread": -21.5,
   "totalMove": 2.0,
   "recentMove": 0.0,
-  "nSnapshots": 6,
+  "nSnapshots": 7,
   "spread": {
    "away": "23.5",
    "home": "-23.5",
-   "awayOdds": "-106",
-   "homeOdds": "-114",
-   "awayEV": -4.6,
-   "homeEV": -4.5,
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -6.3,
+   "homeEV": -2.8,
    "awayP": 49.1,
    "homeP": 50.9,
    "edge": 0.3
   },
   "ml": {
-   "away": "+1160",
-   "home": "-2800",
-   "awayEV": 24.5,
-   "homeEV": -6.7,
+   "away": "+1200",
+   "home": "-3000",
+   "awayEV": 28.5,
+   "homeEV": -6.9,
    "awayP": 9.9,
    "homeP": 90.1
   },
@@ -4549,7 +3831,7 @@
   "tpAway": 0.0,
   "tpHome": 0.0,
   "pPush": 0.0,
-  "unitsSpread": 1.52,
+  "unitsSpread": 1.59,
   "unitsML": 0.0,
   "injAway": 0.0,
   "injHome": 0.5,
@@ -4567,28 +3849,28 @@
     "date": "2026-08-25"
    }
   ],
-  "mlEdgeHome": -1.63,
-  "mlEdgeAway": 1.63,
+  "mlEdgeHome": -0.98,
+  "mlEdgeAway": 0.98,
   "openSpread": -20.5,
   "totalMove": 0.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
+  "recentMove": 0.0,
+  "nSnapshots": 7,
   "spread": {
    "away": "20.5",
    "home": "-20.5",
-   "awayOdds": "-105",
-   "homeOdds": "-115",
-   "awayEV": -27.2,
-   "homeEV": 17.3,
+   "awayOdds": "-110",
+   "homeOdds": "-110",
+   "awayEV": -28.9,
+   "homeEV": 19.8,
    "awayP": 37.3,
    "homeP": 62.7,
    "edge": 5.0
   },
   "ml": {
-   "away": "+1060",
-   "home": "-2300",
-   "awayEV": 14.6,
-   "homeEV": -6.0,
+   "away": "+980",
+   "home": "-1800",
+   "awayEV": 6.7,
+   "homeEV": -4.9,
    "awayP": 9.9,
    "homeP": 90.1
   },
@@ -4650,28 +3932,28 @@
   "injHome": 0.0,
   "injNet": 0.0,
   "injuries": [],
-  "mlEdgeHome": -0.55,
-  "mlEdgeAway": 0.55,
+  "mlEdgeHome": 1.79,
+  "mlEdgeAway": -1.79,
   "openSpread": -6.5,
   "totalMove": 0.0,
   "recentMove": 0.0,
-  "nSnapshots": 6,
+  "nSnapshots": 7,
   "spread": {
    "away": "6.5",
    "home": "-6.5",
-   "awayOdds": "+100",
-   "homeOdds": "-122",
-   "awayEV": -17.0,
-   "homeEV": 6.5,
+   "awayOdds": "-105",
+   "homeOdds": "-115",
+   "awayEV": -19.1,
+   "homeEV": 9.4,
    "awayP": 41.5,
    "homeP": 58.5,
    "edge": 3.3
   },
   "ml": {
-   "away": "+220",
-   "home": "-275",
-   "awayEV": -2.6,
-   "homeEV": -5.1,
+   "away": "+198",
+   "home": "-240",
+   "awayEV": -9.3,
+   "homeEV": -1.4,
    "awayP": 30.4,
    "homeP": 69.6
   },
@@ -4709,9 +3991,11 @@
   "tSpreadHeadline": "",
   "tML": false,
   "tMLReasons": [
-   "Louisville has no returning starting QB"
+   "Ole Miss has a new head coach"
   ],
   "tMLWhy": [
+   "overlooked",
+   "QB/run combo",
    "not Week 0",
    "not Friday",
    "line moved only 0.0 pts"
@@ -4746,28 +4030,28 @@
     "date": "2026-08-25"
    }
   ],
-  "mlEdgeHome": 3.24,
-  "mlEdgeAway": -3.24,
+  "mlEdgeHome": 2.32,
+  "mlEdgeAway": -2.32,
   "openSpread": 2.5,
-  "totalMove": -1.0,
-  "recentMove": -1.0,
-  "nSnapshots": 6,
+  "totalMove": 0.0,
+  "recentMove": 1.0,
+  "nSnapshots": 7,
   "spread": {
-   "away": "-3.5",
-   "home": "3.5",
-   "awayOdds": "-105",
-   "homeOdds": "-115",
-   "awayEV": 12.1,
-   "homeEV": -20.4,
-   "awayP": 57.4,
-   "homeP": 42.6,
-   "edge": -2.8
+   "away": "-2.5",
+   "home": "2.5",
+   "awayOdds": "-122",
+   "homeOdds": "+100",
+   "awayEV": 6.2,
+   "homeEV": -16.7,
+   "awayP": 58.3,
+   "homeP": 41.7,
+   "edge": -3.1
   },
   "ml": {
-   "away": "-156",
-   "home": "+130",
-   "awayEV": -9.5,
-   "homeEV": 3.2,
+   "away": "-150",
+   "home": "+125",
+   "awayEV": -8.1,
+   "homeEV": 1.0,
    "awayP": 55.1,
    "homeP": 44.9
   },
@@ -4797,7 +4081,7 @@
    "sleeper",
    "not Week 0",
    "not Friday",
-   "line moved only 1.0 pts",
+   "line moved only 0.0 pts",
    "returning QB + same head coach"
   ],
   "tSpreadHeadline": "sleeper",
@@ -4808,7 +4092,7 @@
   "tMLWhy": [
    "not Week 0",
    "not Friday",
-   "line moved only 1.0 pts"
+   "line moved only 0.0 pts"
   ],
   "tMLHeadline": ""
  }
