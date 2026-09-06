@@ -687,6 +687,40 @@
      NOTE: margin-based, not efficiency-based. Box scores carry yards/play and turnover data
      that would be a better signal, but mixing scales would require refitting the baseline.
      Flagged as the next upgrade.
+  v43 (model_edge_app_v43.html): OLE MISS reclassified as a returning head coach.
+     THE ISSUE (user question): Golding coached Ole Miss through the playoff -- does that count
+     as returning? The model said no. hc_changed_2026=1 applied the external-hire coefficient
+     and scored HC_i=-0.054, because both bonus terms returned zero (Golding had never been a
+     college HC and was a DEFENSIVE, not offensive, coordinator).
+     WHY THAT WAS WRONG: the published coefficients (arXiv 2511.14035) were fit on 103 EXTERNAL
+     hires. Golding was promoted internally, named "100-percent permanent", and coached the
+     ENTIRE CFP run -- beat Tulane, beat Georgia, lost the Fiesta Bowl semifinal to Miami,
+     finished 13-2. Nearly the whole defensive staff stayed. QB Chambliss returns. The model
+     had no concept of continuity-through-promotion and penalised more continuity than most
+     teams it flags as unchanged.
+     APPLIED, split by what is actually continuous rather than blanket "returning":
+       HC       0.75   Golding returns
+       DC_i    +0.40   defensive staff retained under a defensive head coach
+       Scheme  +0.50   same HC + returning QB
+       OC_i    -0.25   NOT continuous -- Weis Jr left for LSU as the highest-paid OC in the
+                       SEC. John David Baker hired from ECU, but he was Ole Miss co-OC in
+                       2022-23 and the system carries over, so a softened penalty rather than
+                       the full -0.5.
+       C_i     -0.554 -> +1.40   (+1.954 swing)
+     Deliberately NOT scored as a clean no-change team (+2.0) -- the offense genuinely turned
+     over, and that is the half of the staff that produced a school-record 7,354 total yards.
+     EFFECT: Louisville @ Ole Miss raw margin 15.86 -> 17.82, edge 3.28 -> 3.96. Still short of
+     the top-3 cut, so the bet list is unchanged.
+     SCOPE CHECK: I had said "two other teams likely have the same issue" without checking.
+     That was wrong. 22 slate teams have coaching changes; five share the -0.054 signature
+     (California, Kent State, Ohio, Ole Miss, Stanford), but that signature cannot distinguish
+     an internal promotion from an external first-time hire. Verified both slate teams:
+     California hired Tosh Lupoi FROM Oregon and "completely overhauled" the staff, and Ohio
+     hired John Hauser externally with a new DC. Both are genuine external hires and correctly
+     scored. Ole Miss is the only clean instance on the slate.
+     PROCESS NOTE: an initial write attempt failed on new columns and TRUNCATED the master file
+     from 138 rows to 26. Caught immediately, restored from the outputs copy, and the fix was
+     re-applied through a script that backs up first and asserts row count after writing.
   Next version bump required for: any data refresh (new week's games/lines), any change to
   model logic (betas, HFA, sigma, anchor weight), or any further UI/bug fixes. Never overwrite
   a previously-shared filename -- each version gets its own file so old links stay valid and
@@ -965,7 +999,7 @@
 
 <header>
   <div class="week-row">
-    <div class="week-label">Week 1-2 · 2026 <span class="version-tag mono">v42</span></div>
+    <div class="week-label">Week 1-2 · 2026 <span class="version-tag mono">v43</span></div>
     <div class="week-count mono"><span id="gameCount">51</span> games</div>
   </div>
   <div class="disclaimer entertainment">FOR ENTERTAINMENT PURPOSES ONLY</div>
@@ -1852,11 +1886,11 @@
    "home": "-6.5",
    "awayOdds": "-104",
    "homeOdds": "-118",
-   "awayEV": -18.7,
-   "homeEV": 8.2,
-   "awayP": 41.5,
-   "homeP": 58.5,
-   "edge": 3.3
+   "awayEV": -22.1,
+   "homeEV": 11.4,
+   "awayP": 39.7,
+   "homeP": 60.3,
+   "edge": 4.0
   },
   "ml": {
    "away": "+205",
@@ -1883,33 +1917,31 @@
     "OL": "1.35",
     "D": "1.27",
     "T": "2.312",
-    "C": "-0.554"
+    "C": "1.4"
    }
   },
-  "tSpread": false,
-  "tSpreadReasons": [
-   "Ole Miss has a new head coach"
-  ],
+  "tSpread": true,
+  "tSpreadReasons": [],
   "tSpreadWhy": [
    "overlooked",
    "QB/run combo",
    "not Week 0",
    "not Friday",
-   "line moved only 0.0 pts"
+   "line moved only 0.0 pts",
+   "returning QB + same head coach"
   ],
-  "tSpreadHeadline": "",
-  "tML": false,
-  "tMLReasons": [
-   "Ole Miss has a new head coach"
-  ],
+  "tSpreadHeadline": "overlooked",
+  "tML": true,
+  "tMLReasons": [],
   "tMLWhy": [
    "overlooked",
    "QB/run combo",
    "not Week 0",
    "not Friday",
-   "line moved only 0.0 pts"
+   "line moved only 0.0 pts",
+   "returning QB + same head coach"
   ],
-  "tMLHeadline": ""
+  "tMLHeadline": "overlooked"
  },
  {
   "date": "Sep 7",
